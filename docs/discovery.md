@@ -132,3 +132,174 @@ RF-17: El sistema debe cerrar automáticamente una solicitud cuando es rechazada
 ### Ambientes
 - Debe existir separación entre ambientes de desarrollo (dev) y producción (prod).
 - El despliegue debe realizarse mediante procesos automatizados (CI/CD).
+
+---
+
+## 6. Reglas de negocio
+
+| ID    | Regla |
+|-------|-------|
+| RN-01 | Gastos **≤ 50 USD** no requieren aprobación del Manager; pasan directamente a revisión de Finance Analyst. |
+| RN-02 | Gastos **> 50 USD y ≤ 500 USD** requieren aprobación del Manager antes de pasar a Finance Review. |
+| RN-03 | Gastos **> 500 USD** requieren aprobación del Manager **y** del Finance Admin. |
+| RN-04 | Todo gasto debe incluir un comprobante (URL, nombre de archivo o referencia). Si falta, la solicitud pasa a `CHANGES_REQUESTED`; no se rechaza automáticamente. |
+| RN-05 | Un empleado **no puede aprobar su propio gasto** (conflicto de interés). |
+| RN-06 | Una solicitud **rechazada queda cerrada**; no puede reabrirse ni transicionar a otro estado. |
+| RN-07 | El monto de un gasto debe ser **mayor a 0**. |
+| RN-08 | Los campos **categoría** y **descripción** son obligatorios al crear una solicitud. |
+| RN-09 | Una solicitud aprobada por todos los niveles requeridos pasa automáticamente a `READY_FOR_PAYMENT`. |
+| RN-10 | El sistema debe **advertir** (sin bloquear) si ya existe un gasto similar por monto, fecha y categoría. |
+| RN-11 | El MVP **no procesa dinero real**. Finance Analyst puede marcar una solicitud como `PAID` manualmente. |
+
+---
+
+## 7. Estados del flujo principal
+
+La entidad principal es **ExpenseRequest** (solicitud de gasto).
+
+```
+DRAFT → SUBMITTED → [MANAGER_REVIEW] → FINANCE_REVIEW → READY_FOR_PAYMENT → PAID
+                           ↓                  ↓
+                    CHANGES_REQUESTED  CHANGES_REQUESTED
+                           ↓                  ↓
+                        REJECTED           REJECTED
+                                         CANCELLED (por el empleado)
+```
+
+> **Nota:** El paso por `MANAGER_REVIEW` depende del monto (RN-01, RN-02, RN-03).
+
+| Estado | Descripción | Quién puede actuar |
+|--------|-------------|-------------------|
+| `DRAFT` | Solicitud creada pero no enviada. Solo visible para el Employee. | Employee |
+| `SUBMITTED` | Solicitud enviada al flujo de aprobación. | Sistema |
+| `MANAGER_REVIEW` | Esperando aprobación del Manager (solo si monto > 50 USD). | Manager |
+| `FINANCE_REVIEW` | En revisión por Finance Analyst. | Finance Analyst |
+| `CHANGES_REQUESTED` | Se detectó un problema (falta comprobante u otro). El Employee debe corregir y reenviar. | Employee |
+| `READY_FOR_PAYMENT` | Todos los niveles aprobaron. Pendiente de pago. | Finance Analyst / Finance Admin |
+| `PAID` | Marcado manualmente como pagado. Estado final. | Finance Analyst |
+| `REJECTED` | Rechazada. Estado final, no reabre. | — |
+| `CANCELLED` | Cancelada por el Employee antes de ser procesada. Estado final. | Employee |
+
+### Transiciones válidas
+
+| Desde | Hacia | Condición |
+|-------|-------|-----------|
+| `DRAFT` | `SUBMITTED` | Employee envía la solicitud |
+| `SUBMITTED` | `MANAGER_REVIEW` | Monto > 50 USD |
+| `SUBMITTED` | `FINANCE_REVIEW` | Monto ≤ 50 USD |
+| `MANAGER_REVIEW` | `FINANCE_REVIEW` | Manager aprueba |
+| `MANAGER_REVIEW` | `CHANGES_REQUESTED` | Falta comprobante u otro problema |
+| `MANAGER_REVIEW` | `REJECTED` | Manager rechaza |
+| `FINANCE_REVIEW` | `READY_FOR_PAYMENT` | Finance aprueba (+ Finance Admin si monto > 500 USD) |
+| `FINANCE_REVIEW` | `CHANGES_REQUESTED` | Finance solicita corrección |
+| `FINANCE_REVIEW` | `REJECTED` | Finance rechaza |
+| `CHANGES_REQUESTED` | `SUBMITTED` | Employee corrige y reenvía |
+| `READY_FOR_PAYMENT` | `PAID` | Finance Analyst marca como pagado |
+| `DRAFT` / `SUBMITTED` | `CANCELLED` | Employee cancela |
+
+### Transiciones inválidas
+
+- `PAID`, `REJECTED`, `CANCELLED` → cualquier otro estado (son estados finales).
+- Employee no puede mover una solicitud desde `MANAGER_REVIEW` o `FINANCE_REVIEW`.
+- No se puede saltar `MANAGER_REVIEW` si el monto lo requiere.
+
+---
+
+## 8. Eventos del sistema
+
+| Evento | Cuándo ocurre | Quién lo dispara | Datos relevantes | Notificación | Auditoría |
+|--------|--------------|-----------------|-----------------|:-----------:|:--------:|
+| `EXPENSE_CREATED` | Employee crea la solicitud en DRAFT | Employee | expense_id, amount, category, employee_id | No | Sí |
+| `EXPENSE_SUBMITTED` | Employee envía la solicitud | Employee | expense_id, amount, category, submitted_at | Sí | Sí |
+| `MANAGER_APPROVAL_REQUIRED` | Solicitud entra a MANAGER_REVIEW | Sistema | expense_id, manager_id, amount | Sí | Sí |
+| `FINANCE_REVIEW_REQUIRED` | Solicitud entra a FINANCE_REVIEW | Sistema | expense_id, analyst_id, amount | Sí | Sí |
+| `EXPENSE_APPROVED` | Manager o Finance aprueba | Manager / Finance Analyst / Finance Admin | expense_id, approved_by, approved_at, level | Sí | Sí |
+| `EXPENSE_REJECTED` | Manager o Finance rechaza | Manager / Finance Analyst | expense_id, rejected_by, reason, rejected_at | Sí | Sí |
+| `CHANGES_REQUESTED` | Se piden correcciones al Employee | Manager / Finance Analyst | expense_id, requested_by, comment, requested_at | Sí | Sí |
+| `EXPENSE_READY_FOR_PAYMENT` | Todos los niveles aprobaron | Sistema | expense_id, total_amount, approved_at | Sí | Sí |
+| `EXPENSE_PAID` | Finance marca como pagado | Finance Analyst | expense_id, paid_by, paid_at | Sí | Sí |
+| `EXPENSE_CANCELLED` | Employee cancela | Employee | expense_id, cancelled_by, cancelled_at | No | Sí |
+
+---
+
+## 9. Notificaciones
+
+| Evento disparador | Destinatario | Canal | Prioridad |
+|-------------------|-------------|-------|-----------|
+| `MANAGER_APPROVAL_REQUIRED` | Manager del equipo | In-app | Alta |
+| `FINANCE_REVIEW_REQUIRED` | Finance Analyst | In-app | Alta |
+| `EXPENSE_APPROVED` | Employee solicitante | In-app | Media |
+| `EXPENSE_REJECTED` | Employee solicitante | In-app | Alta |
+| `CHANGES_REQUESTED` | Employee solicitante | In-app | Alta |
+| `EXPENSE_READY_FOR_PAYMENT` | Finance Analyst, Finance Admin | In-app | Alta |
+| `EXPENSE_PAID` | Employee solicitante | In-app | Media |
+
+> **Canal MVP:** notificaciones in-app únicamente. Email e integraciones externas quedan fuera del alcance del MVP.
+
+---
+
+## 10. Alcance MVP
+
+El MVP cubre el flujo completo de una solicitud de gasto desde su creación hasta el marcado como pagado:
+
+- Autenticación de usuarios con roles (Employee, Manager, Finance Analyst, Finance Admin, System Admin).
+- Crear solicitud de gasto con monto, categoría, descripción y comprobante (referencia de texto).
+- Envío de solicitud por parte del Employee.
+- Aprobación o rechazo por Manager (según monto).
+- Revisión, aprobación o rechazo por Finance Analyst.
+- Aprobación adicional por Finance Admin para gastos > 500 USD.
+- Solicitud de cambios y reenvío corregido por el Employee.
+- Marcado manual como `PAID` por Finance Analyst.
+- Notificaciones in-app por eventos del flujo.
+- Historial y auditoría de acciones sobre cada solicitud.
+- Advertencia (no bloqueo) de posible gasto duplicado.
+- Listado de solicitudes filtrado por rol del usuario.
+- Vista de detalle por solicitud.
+
+---
+
+## 11. Fuera de alcance
+
+Los siguientes elementos **no** se construirán en el MVP:
+
+- Procesamiento de pagos o transferencias bancarias reales.
+- Integración con sistemas bancarios o pasarelas de pago.
+- OCR o lectura automática de comprobantes (fotos de recibos, facturas escaneadas).
+- Carga real de archivos a cloud storage (solo referencia/URL en texto).
+- Reportes financieros avanzados o dashboards analíticos.
+- Reglas tributarias o cálculos de impuestos.
+- Notificaciones por email o SMS.
+- Aplicación móvil nativa.
+
+---
+
+## 12. Riesgos, supuestos y preguntas abiertas
+
+### Riesgos
+
+| ID   | Tipo | Descripción | Impacto |
+|------|------|-------------|---------|
+| R-01 | Alcance | La lógica de aprobación por monto puede crecer si el cliente define más niveles en el futuro. | Medio |
+| R-02 | Negocio | Sin validación de comprobante real, un empleado puede enviar referencias falsas. | Bajo (aceptado en MVP) |
+| R-03 | Técnico | Si el event bus falla, las notificaciones pueden perderse sin afectar el flujo de negocio. | Medio |
+| R-04 | Alcance | El cliente puede pedir detección más estricta de duplicados (bloqueo en lugar de advertencia). | Bajo |
+| R-05 | Negocio | Conflicto de interés si un Manager es también el solicitante — el sistema debe validarlo activamente. | Alto |
+
+### Supuestos
+
+- Cada Employee tiene exactamente un Manager asignado.
+- El comprobante en el MVP es una referencia de texto (URL o nombre); no se sube archivo real.
+- Solo existe un Finance Admin activo que aprueba gastos > 500 USD.
+- El MVP no maneja múltiples monedas; todo es en USD.
+- Las notificaciones in-app se muestran en el frontend; no se envían emails.
+- Un gasto cancelado en `DRAFT` o `SUBMITTED` no genera notificación a terceros.
+
+### Preguntas abiertas
+
+| ID    | Pregunta | Responsable |
+|-------|----------|-------------|
+| PA-01 | ¿Puede un Manager rechazar un gasto que ya pasó a Finance Review si detecta un error? | Cliente |
+| PA-02 | ¿Existe un tiempo límite para aprobar una solicitud antes de escalar automáticamente? | Cliente |
+| PA-03 | ¿El Finance Admin puede también actuar como Finance Analyst en el mismo flujo? | Cliente |
+| PA-04 | ¿El Employee puede ver el historial de solicitudes de otros empleados (solo lectura)? | Cliente |
+| PA-05 | ¿La advertencia de duplicado solo muestra aviso o puede bloquear el envío bajo ciertas condiciones? | Equipo (decisión de diseño) |
