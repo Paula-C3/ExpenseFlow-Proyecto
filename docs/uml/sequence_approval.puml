@@ -1,0 +1,51 @@
+@startuml
+skinparam maxMessageSize 150
+autonumber
+
+actor "Manager" as mgr
+participant "Frontend / App" as app
+participant "Backend API" as api
+database "ExpenseRepository" as repo
+participant "EventPublisher" as pub
+database "AuditLog" as audit
+actor "Finance Admin" as fadmin
+
+== Flujo Crítico: Aprobación en Cadena (> 500 USD) ==
+
+mgr -> app: Clic en "Aprobar"
+app -> api: POST /expenses/{id}/approve (userId=Manager)
+activate api
+
+api -> repo: findById(id)
+repo --> api: ExpenseRequest (state: MANAGER_REVIEW)
+
+api -> api: Set state = FINANCE_REVIEW
+api -> repo: save(ExpenseRequest)
+api -> pub: publish(ExpenseApprovedEvent, level="MANAGER")
+api -> audit: logAction(mgrId, "MANAGER_APPROVED")
+
+api --> app: 200 OK
+app --> mgr: Muestra éxito
+deactivate api
+
+|||
+note over fadmin, api: Tiempo después, revisión de alto monto
+|||
+
+fadmin -> app: Clic en "Aprobación Final"
+app -> api: POST /expenses/{id}/approve (userId=FinanceAdmin)
+activate api
+
+api -> repo: findById(id)
+repo --> api: ExpenseRequest (state: FINANCE_REVIEW)
+
+api -> api: Set state = READY_FOR_PAYMENT
+api -> repo: save(ExpenseRequest)
+api -> pub: publish(ExpenseReadyForPaymentEvent)
+api -> audit: logAction(fadminId, "FINANCE_ADMIN_APPROVED")
+
+api --> app: 200 OK
+app --> fadmin: Muestra éxito
+deactivate api
+
+@enduml

@@ -1,0 +1,58 @@
+@startuml
+skinparam maxMessageSize 150
+autonumber
+
+actor "Employee" as emp
+participant "Frontend / App" as app
+participant "Backend API" as api
+participant "ApprovalPolicy" as policy
+database "ExpenseRepository" as repo
+participant "EventPublisher" as pub
+participant "NotificationService" as notif
+database "AuditLog" as audit
+
+== Flujo Crítico: Creación y Envío de Solicitud de Gasto ==
+
+emp -> app: Llena formulario (monto, categoría, recibo) y envía
+app -> api: POST /expenses (ExpenseRequest)
+
+activate api
+api -> api: Validar datos (monto > 0, campos obligatorios)
+
+alt Datos inválidos
+    api --> app: 400 Bad Request (Error de validación)
+    app --> emp: Muestra mensaje de error
+else Datos válidos
+    api -> policy: evaluate(ExpenseRequest)
+    activate policy
+    policy --> api: ApprovalResult (Determina nivel de aprobación)
+    deactivate policy
+
+    api -> api: Set state = SUBMITTED
+
+    api -> repo: save(ExpenseRequest)
+    activate repo
+    repo --> api: ExpenseRequest guardado
+    deactivate repo
+
+    api -> pub: publish(ExpenseSubmittedEvent)
+    activate pub
+    pub -> notif: listen(ExpenseSubmittedEvent)
+    activate notif
+    notif -> notif: Identificar destinatarios (Manager/Finance)
+    notif --> pub: Notificaciones encoladas
+    deactivate notif
+    pub --> api: Evento publicado
+    deactivate pub
+
+    api -> audit: logAction(userId, "EXPENSE_CREATED_AND_SUBMITTED")
+    activate audit
+    audit --> api: Registro exitoso
+    deactivate audit
+
+    api --> app: 201 Created (ExpenseRequest ID)
+    app --> emp: Redirige a pantalla de éxito
+end
+deactivate api
+
+@enduml
