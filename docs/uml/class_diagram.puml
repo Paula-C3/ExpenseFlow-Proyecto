@@ -1,0 +1,117 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' --- Interfaces y Abstracciones ---
+interface IExpenseRepository {
+  + save(request: ExpenseRequest): ExpenseRequest
+  + findById(id: String): ExpenseRequest
+  + findByEmployee(employeeId: String): List<ExpenseRequest>
+}
+
+interface IEventPublisher {
+  + publish(event: SystemEvent): void
+}
+
+' --- Patrón Strategy/Policy para Reglas de Aprobación ---
+interface IApprovalPolicy {
+  + evaluate(request: ExpenseRequest): ApprovalResult
+}
+
+class StandardApprovalPolicy implements IApprovalPolicy {
+  + evaluate(request: ExpenseRequest): ApprovalResult
+}
+
+class HighAmountApprovalPolicy implements IApprovalPolicy {
+  + evaluate(request: ExpenseRequest): ApprovalResult
+}
+
+' --- Entidades Principales ---
+class User {
+  - id: String
+  - name: String
+  - role: Role
+  - email: String
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  FINANCE_ANALYST
+  FINANCE_ADMIN
+  SYSTEM_ADMIN
+}
+
+class ExpenseRequest {
+  - id: String
+  - amount: Double
+  - category: String
+  - description: String
+  - receiptReference: String
+  - state: ExpenseState
+  - createdAt: Date
+  - employeeId: String
+  + submit(): void
+  + approve(userId: String): void
+  + reject(userId: String, reason: String): void
+  + requestChanges(userId: String, comment: String): void
+  + markAsPaid(userId: String): void
+  + setState(state: ExpenseState): void
+}
+
+' --- Patrón State para el Ciclo de Vida ---
+abstract class ExpenseState {
+  + handleApproval(request: ExpenseRequest, userId: String): void
+  + handleRejection(request: ExpenseRequest, userId: String, reason: String): void
+}
+
+class DraftState extends ExpenseState
+class SubmittedState extends ExpenseState
+class ManagerReviewState extends ExpenseState
+class FinanceReviewState extends ExpenseState
+class ChangesRequestedState extends ExpenseState
+class ReadyForPaymentState extends ExpenseState
+class PaidState extends ExpenseState
+
+' --- Eventos (Observer/Event) ---
+abstract class SystemEvent {
+  - eventId: String
+  - occurredAt: Date
+  - expenseId: String
+}
+
+class ExpenseSubmittedEvent extends SystemEvent
+class ExpenseApprovedEvent extends SystemEvent
+class ChangesRequestedEvent extends SystemEvent
+
+class NotificationService {
+  + sendInAppNotification(userId: String, message: String): void
+}
+
+' --- Auditoría y Aprobaciones ---
+class AuditLog {
+  - id: String
+  - expenseId: String
+  - userId: String
+  - action: String
+  - timestamp: Date
+}
+
+class ApprovalDecision {
+  - id: String
+  - expenseId: String
+  - approverId: String
+  - level: String
+  - decisionDate: Date
+}
+
+' --- Relaciones ---
+User --> Role
+ExpenseRequest *-- ExpenseState
+ExpenseRequest --> IApprovalPolicy : "uses"
+IEventPublisher ..> SystemEvent : "publishes"
+NotificationService ..> SystemEvent : "listens to"
+ExpenseRequest "1" *-- "*" ApprovalDecision
+ExpenseRequest "1" *-- "*" AuditLog
+IExpenseRepository "1" --> "*" ExpenseRequest
+
+@enduml
