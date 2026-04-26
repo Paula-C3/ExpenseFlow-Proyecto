@@ -28,8 +28,9 @@ else Datos válidos
     policy --> api: ApprovalResult (Determina nivel de aprobación)
     deactivate policy
 
-    api -> api: Set state = SUBMITTED
-
+    api -> api: Inicializa estado = DRAFT
+    api -> api: Actualiza estado = SUBMITTED (Envío)
+    
     api -> repo: save(ExpenseRequest)
     activate repo
     repo --> api: ExpenseRequest guardado

@@ -3,7 +3,7 @@ skinparam classAttributeIconSize 0
 
 ' --- Interfaces y Abstracciones ---
 interface IExpenseRepository {
-  + save(request: ExpenseRequest): void
+  + save(request: ExpenseRequest): ExpenseRequest
   + findById(id: String): ExpenseRequest
   + findByEmployee(employeeId: String): List<ExpenseRequest>
 }

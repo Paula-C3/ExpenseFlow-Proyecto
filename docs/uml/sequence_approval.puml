@@ -21,7 +21,7 @@ repo --> api: ExpenseRequest (state: MANAGER_REVIEW)
 
 api -> api: Set state = FINANCE_REVIEW
 api -> repo: save(ExpenseRequest)
-api -> pub: publish(ExpenseApprovedEvent, level="MANAGER")
+api -> pub: publish(ExpenseApprovedEvent {level: "MANAGER"})
 api -> audit: logAction(mgrId, "MANAGER_APPROVED")
 
 api --> app: 200 OK

@@ -11,7 +11,7 @@ actor "System Admin" as sysadmin
 rectangle "ExpenseFlow MVP" {
   usecase "Crear solicitud de gasto en DRAFT" as UC1
   usecase "Adjuntar referencia de comprobante" as UC2
-  usecase "Enviar solicitud (SUBMIT)" as UC3
+  usecase "Enviar solicitud (estado: SUBMITTED)" as UC3
   usecase "Consultar estado de solicitudes" as UC4
   usecase "Corregir y reenviar solicitud" as UC5
   usecase "Cancelar solicitud" as UC13
