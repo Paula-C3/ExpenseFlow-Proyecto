@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from backend.app.domain.interfaces.event_bus import DomainEvent
-from backend.app.domain.enums import RequestStatus
+from app.domain.interfaces.event_bus import DomainEvent
+from app.domain.enums import RequestStatus
 
 
 @dataclass
@@ -82,3 +82,4 @@ class NotificationCreatedEvent(DomainEvent):
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.utcnow()
+
