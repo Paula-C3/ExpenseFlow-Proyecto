@@ -1,6 +1,6 @@
 from typing import Dict, List, Type
 
-from backend.app.domain.interfaces.event_bus import IEventBus, DomainEvent, IEventListener
+from app.domain.interfaces.event_bus import IEventBus, DomainEvent, IEventListener
 
 
 class MemoryEventBus(IEventBus):
