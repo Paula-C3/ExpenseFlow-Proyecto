@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from app.domain.interfaces.event_bus import IEventListener, DomainEvent
-from app.domain.events import (
+from backend.app.domain.interfaces.event_bus import IEventListener, DomainEvent
+from backend.app.domain.events import (
     RequestApprovedEvent,
     RequestRejectedEvent,
     RequestSubmittedEvent,
     RequestStatusChangedEvent,
 )
-from app.domain.factories.audit_log_builder import AuditLogBuilder
+from backend.app.domain.factories.audit_log_builder import AuditLogBuilder
 
 
 class AuditListener(IEventListener):
@@ -69,7 +69,7 @@ class NotificationListener(IEventListener):
 
     def handle(self, event: DomainEvent) -> None:
         """Maneja eventos para crear notificaciones."""
-        from app.domain.entities.notification import Notification
+        from backend.app.domain.entities.request import Notification
 
         if isinstance(event, RequestSubmittedEvent):
             notification = Notification(
