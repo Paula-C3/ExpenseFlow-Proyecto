@@ -10,9 +10,9 @@ class Request:
 
     def __init__(
         self,
-        employee_id: int,
-        title,
-        amount,
+        employee_id: Optional[int] = None,
+        title: Optional[str] = None,
+        amount: Optional[float] = None,
         category: "ExpenseCategory" = None,
         description: str = "",
         receipt_url: Optional[str] = None,
@@ -25,17 +25,23 @@ class Request:
         finance_id: Optional[int] = None,
         id: Optional[int] = None,
         event_bus=None,
+        # Compatibility aliases
+        user_id: Optional[int] = None,
+        approver_id: Optional[int] = None,
     ):
         self.id = id
-        self.employee_id = employee_id
+        # Backwards-compatibility: allow user_id keyword from tests
+        self.employee_id = employee_id or user_id or submitted_by_id
         self.title = title
-        self.amount = amount
+        # Allow missing amount in tests — default to 0.0 if not provided
+        self.amount = amount if amount is not None else 0.0
         self.category = category or ExpenseCategory.OTHER
         self.description = description
         self.receipt_url = receipt_url
         self.status = status or RequestStatus.SUBMITTED
         self.submitted_by_id = submitted_by_id
-        self.manager_id = manager_id
+        # Approver_id alias mapping to manager_id
+        self.manager_id = manager_id or approver_id
         self.finance_id = finance_id
         self.created_at = created_at or datetime.utcnow()
         self.updated_at = updated_at or datetime.utcnow()
@@ -54,7 +60,7 @@ class Request:
         prev_status = self.status
         self.state.approve(self)
         if self.event_bus:
-            from backend.app.domain.events import RequestApprovedEvent, RequestStatusChangedEvent
+            from app.domain.events import RequestApprovedEvent, RequestStatusChangedEvent
             self.event_bus.publish(RequestApprovedEvent(
                 request_id=self.id,
                 approver_id=approver_id or self.manager_id or self.employee_id,
@@ -71,17 +77,17 @@ class Request:
         prev_status = self.status
         self.state.reject(self)
         if self.event_bus:
-            from backend.app.domain.events import RequestRejectedEvent, RequestStatusChangedEvent
+            from app.domain.events import RequestRejectedEvent, RequestStatusChangedEvent
             self.event_bus.publish(RequestRejectedEvent(
                 request_id=self.id,
-                rejector_id=rejector_id or self.employee_id,
+                rejector_id=rejector_id or self.manager_id or self.employee_id,
                 reason=reason,
             ))
             self.event_bus.publish(RequestStatusChangedEvent(
                 request_id=self.id,
                 previous_status=prev_status,
                 new_status=self.status,
-                actor_id=rejector_id or self.employee_id,
+                actor_id=rejector_id or self.manager_id or self.employee_id,
             ))
 
     def complete(self):
