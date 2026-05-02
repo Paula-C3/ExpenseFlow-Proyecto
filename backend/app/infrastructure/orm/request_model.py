@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, Text        #type: ignore
+from sqlalchemy.orm import relationship        #type: ignore
 from datetime import datetime
 
 from backend.app.infrastructure.database import Base
@@ -32,7 +32,8 @@ class RequestModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Request, SubmittedState
+        from backend.app.domain.entities.request import Request
+        from backend.app.domain.states.submitted_state import SubmittedState
         from backend.app.domain.value_objects import Money, RequestTitle
         from backend.app.domain.enums import RequestStatus
 
@@ -107,7 +108,7 @@ class AuditLogModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import AuditLog
+        from backend.app.domain.entities.audit_log import AuditLog
         return AuditLog(
             id=self.id,
             actor_id=self.actor_id,
@@ -141,7 +142,7 @@ class NotificationModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Notification
+        from backend.app.domain.entities.notification import Notification
         return Notification(
             id=self.id,
             user_id=self.user_id,

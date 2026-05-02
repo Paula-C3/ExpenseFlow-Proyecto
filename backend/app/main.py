@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.infrastructure.database import init_db
 from backend.app.api.routes import auth
+from backend.app.api.routes import requests_router
+from backend.app.api.routes import notifications_router
+
+
 
 app = FastAPI(
     title="ExpenseFlow API",
@@ -21,6 +25,8 @@ app.add_middleware(
 
 # Incluir routers
 app.include_router(auth.router)
+app.include_router(requests_router.router)
+app.include_router(notifications_router.router)
 
 # Event startup
 @app.on_event("startup")

@@ -1,7 +1,7 @@
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, Text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, Text         #type: ignore
+from sqlalchemy.ext.declarative import declarative_base     #type: ignore
+from sqlalchemy.orm import sessionmaker, Session     #type: ignore
 from datetime import datetime
 
 # Base para todos los modelos ORM
