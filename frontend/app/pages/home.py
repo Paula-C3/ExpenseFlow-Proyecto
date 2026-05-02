@@ -1,6 +1,15 @@
 import streamlit as st
 from frontend.app.services import api_client
 
+# Indicador de notificaciones en sidebar
+try:
+    _notes = api_client.get_notifications()
+    unread = sum(1 for n in _notes if not n.get("is_read", False))
+    st.sidebar.write(f"Notificaciones ({unread})")
+except Exception:
+    # No bloquear la página por errores en notificaciones
+    pass
+
 st.title("Solicitudes")
 
 try:
