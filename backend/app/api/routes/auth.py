@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, status       #type: ignore
+from sqlalchemy.orm import Session                                  #type: ignore
 
 from backend.app.api.schemas.auth_schemas import UserLogin, UserRegister, TokenResponse
 from backend.app.api.dependencies import create_access_token, get_current_user
