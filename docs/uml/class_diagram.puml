@@ -1,9 +1,129 @@
+' ===== DIAGRAMA 1 (MVP / SIMPLE) =====
+@startuml
+skinparam classAttributeIconSize 0
+
+' --- Interfaces y Abstracciones ---
+interface IExpenseRepository {
+  + save(request: ExpenseRequest): ExpenseRequest
+  + findById(id: String): ExpenseRequest
+  + findByEmployee(employeeId: String): List<ExpenseRequest>
+}
+
+interface IEventPublisher {
+  + publish(event: SystemEvent): void
+}
+
+' --- Patrón Strategy/Policy para Reglas de Aprobación ---
+interface IApprovalPolicy {
+  + evaluate(request: ExpenseRequest): ApprovalResult
+}
+
+class StandardApprovalPolicy implements IApprovalPolicy {
+  + evaluate(request: ExpenseRequest): ApprovalResult
+}
+
+class HighAmountApprovalPolicy implements IApprovalPolicy {
+  + evaluate(request: ExpenseRequest): ApprovalResult
+}
+
+' --- Entidades Principales ---
+class User {
+  - id: String
+  - name: String
+  - role: Role
+  - email: String
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  FINANCE_ANALYST
+  FINANCE_ADMIN
+  SYSTEM_ADMIN
+}
+
+class ExpenseRequest {
+  - id: String
+  - amount: Double
+  - category: String
+  - description: String
+  - receiptReference: String
+  - state: ExpenseState
+  - createdAt: Date
+  - employeeId: String
+  + submit(): void
+  + approve(userId: String): void
+  + reject(userId: String, reason: String): void
+  + requestChanges(userId: String, comment: String): void
+  + markAsPaid(userId: String): void
+  + setState(state: ExpenseState): void
+}
+
+' --- Patrón State ---
+abstract class ExpenseState {
+  + handleApproval(request: ExpenseRequest, userId: String): void
+  + handleRejection(request: ExpenseRequest, userId: String, reason: String): void
+}
+
+class DraftState extends ExpenseState
+class SubmittedState extends ExpenseState
+class ManagerReviewState extends ExpenseState
+class FinanceReviewState extends ExpenseState
+class ChangesRequestedState extends ExpenseState
+class ReadyForPaymentState extends ExpenseState
+class PaidState extends ExpenseState
+
+' --- Eventos ---
+abstract class SystemEvent {
+  - eventId: String
+  - occurredAt: Date
+  - expenseId: String
+}
+
+class ExpenseSubmittedEvent extends SystemEvent
+class ExpenseApprovedEvent extends SystemEvent
+class ChangesRequestedEvent extends SystemEvent
+
+class NotificationService {
+  + sendInAppNotification(userId: String, message: String): void
+}
+
+' --- Auditoría ---
+class AuditLog {
+  - id: String
+  - expenseId: String
+  - userId: String
+  - action: String
+  - timestamp: Date
+}
+
+class ApprovalDecision {
+  - id: String
+  - expenseId: String
+  - approverId: String
+  - level: String
+  - decisionDate: Date
+}
+
+' --- Relaciones ---
+User --> Role
+ExpenseRequest *-- ExpenseState
+ExpenseRequest --> IApprovalPolicy : uses
+IEventPublisher ..> SystemEvent : publishes
+NotificationService ..> SystemEvent : listens to
+ExpenseRequest "1" *-- "*" ApprovalDecision
+ExpenseRequest "1" *-- "*" AuditLog
+IExpenseRepository "1" --> "*" ExpenseRequest
+
+@enduml
+
+
+' ===== DIAGRAMA 2 (DDD COMPLETO - AYELEN) =====
 @startuml class_diagram
 
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
-' ── DOMAIN ENTITIES ──────────────────────────────────────────
 package "domain.entities" {
     class Request {
         +id: int
@@ -41,7 +161,6 @@ package "domain.entities" {
     }
 }
 
-' ── STATE PATTERN ─────────────────────────────────────────────
 package "domain.states" {
     interface IRequestState <<interface>> {
         +approve(request, approver_id, comment)
@@ -50,26 +169,21 @@ package "domain.states" {
         +cancel(request)
     }
 
-    class DraftState <<State>> implements IRequestState
-    class SubmittedState <<State>> implements IRequestState
-    class ManagerReviewState <<State>> implements IRequestState
-    class FinanceReviewState <<State>> implements IRequestState
-    class ApprovedState <<State>> implements IRequestState
-    class RejectedState <<State>> implements IRequestState
-    class ChangesRequestedState <<State>> implements IRequestState
-    class ReadyForPaymentState <<State>> implements IRequestState
-    class PaidState <<State>> implements IRequestState
+    class DraftState implements IRequestState
+    class SubmittedState implements IRequestState
+    class ManagerReviewState implements IRequestState
+    class FinanceReviewState implements IRequestState
+    class ApprovedState implements IRequestState
+    class RejectedState implements IRequestState
+    class ChangesRequestedState implements IRequestState
+    class ReadyForPaymentState implements IRequestState
+    class PaidState implements IRequestState
 }
 
-Request o--> IRequestState : state
+Request o--> IRequestState
 
-' ── OBSERVER PATTERN ──────────────────────────────────────────
 package "domain.events" {
-    class RequestCreatedEvent {
-        +request_id: int
-        +employee_id: int
-        +amount: float
-    }
+    class RequestCreatedEvent
     class RequestApprovedEvent
     class RequestRejectedEvent
     class ChangesRequestedEvent
@@ -77,147 +191,68 @@ package "domain.events" {
 }
 
 package "domain.interfaces" {
-    interface IEventBus <<interface>> {
+    interface IEventBus {
         +publish(event)
         +subscribe(event_type, listener)
     }
 }
 
 package "infrastructure.event_bus" {
-    class EventBus <<Observer>> implements IEventBus {
-        -listeners: dict
-        +publish(event)
-        +subscribe(event_type, listener)
-    }
-
-    class NotificationListener <<Observer>> {
-        +handle(event)
-    }
-
-    class AuditListener <<Observer>> {
-        +handle(event)
-    }
+    class EventBus implements IEventBus
+    class NotificationListener
+    class AuditListener
 }
 
-EventBus --> NotificationListener : notifies
-EventBus --> AuditListener : notifies
-NotificationListener --> Notification : creates
-AuditListener --> AuditLog : creates
+EventBus --> NotificationListener
+EventBus --> AuditListener
+NotificationListener --> Notification
+AuditListener --> AuditLog
 
-' ── FACTORY PATTERN ───────────────────────────────────────────
 package "domain.factories" {
-    class RequestFactory <<Factory>> {
-        +{static} create(employee_id, title, amount, ...): Request
-    }
+    class RequestFactory
 }
 
-RequestFactory --> Request : creates
+RequestFactory --> Request
 
-' ── COMMAND PATTERN ───────────────────────────────────────────
 package "application.patterns" {
-    interface ICommand <<interface>> {
+    interface ICommand {
         +execute()
     }
 
-    class ApproveRequestCommand <<Command>> implements ICommand {
-        +request_id: int
-        +approver_id: int
-        +comment: str
-        +execute()
-    }
-
-    class RejectRequestCommand <<Command>> implements ICommand {
-        +request_id: int
-        +rejector_id: int
-        +reason: str
-        +execute()
-    }
-
-    class CommandHandler <<Command>> {
-        +handle(command: ICommand)
-    }
+    class ApproveRequestCommand implements ICommand
+    class RejectRequestCommand implements ICommand
+    class CommandHandler
 }
 
-CommandHandler --> ICommand : handles
+CommandHandler --> ICommand
 
-' ── STRATEGY PATTERN ──────────────────────────────────────────
 package "application.patterns" {
-    interface IApprovalStrategy <<interface>> {
-        +approve(request, approver_id, comment)
-    }
-
-    class SimpleApprovalStrategy <<Strategy>> implements IApprovalStrategy
-    class HighRiskApprovalStrategy <<Strategy>> implements IApprovalStrategy
-
-    class ApprovalStrategySelector <<Strategy>> {
-        +select(request): IApprovalStrategy
-    }
+    interface IApprovalStrategy
+    class SimpleApprovalStrategy
+    class HighRiskApprovalStrategy
+    class ApprovalStrategySelector
 }
 
-ApprovalStrategySelector --> IApprovalStrategy : selects
+ApprovalStrategySelector --> IApprovalStrategy
 
-' ── TEMPLATE METHOD PATTERN ───────────────────────────────────
 package "application.patterns" {
-    abstract class BaseRequestProcessor <<Template Method>> {
-        +process()
-        #validate()
-        #{abstract} execute()
-        #notify()
-        #audit()
-    }
-
-    class ApproveRequestProcessor extends BaseRequestProcessor
-    class RejectRequestProcessor extends BaseRequestProcessor
+    abstract class BaseRequestProcessor
+    class ApproveRequestProcessor
+    class RejectRequestProcessor
 }
 
-' ── REPOSITORIES ──────────────────────────────────────────────
 package "domain.interfaces" {
-    interface IRequestRepository <<interface>> {
-        +save(request): Request
-        +find_by_id(id): Request
-        +find_by_employee(employee_id): List
-        +find_by_role(role): List
-        +update(request): Request
-    }
-
-    interface INotificationRepository <<interface>> {
-        +save(notification): Notification
-        +find_by_user(user_id): List
-        +mark_as_read(id): Notification
-    }
-
-    interface IAuditLogRepository <<interface>> {
-        +save(log): AuditLog
-        +find_by_entity(entity_type, entity_id): List
-        +find_all(): List
-    }
+    interface IRequestRepository
+    interface INotificationRepository
+    interface IAuditLogRepository
 }
 
-' ── USE CASES ─────────────────────────────────────────────────
 package "application.use_cases" {
-    class CreateRequestUseCase {
-        +execute(dto, employee_id): RequestResponseDTO
-    }
-    class ApproveRequestUseCase {
-        +execute(request_id, dto, approver_id, role): RequestResponseDTO
-    }
-    class RejectRequestUseCase {
-        +execute(request_id, dto, rejector_id, role): RequestResponseDTO
-    }
-    class GetRequestsByRoleUseCase {
-        +execute(role, employee_id): List
-    }
-    class GetRequestDetailUseCase {
-        +execute(request_id): RequestResponseDTO
-    }
+    class CreateRequestUseCase
+    class ApproveRequestUseCase
+    class RejectRequestUseCase
+    class GetRequestsByRoleUseCase
+    class GetRequestDetailUseCase
 }
-
-CreateRequestUseCase --> IRequestRepository
-CreateRequestUseCase --> IEventBus
-CreateRequestUseCase --> RequestFactory
-ApproveRequestUseCase --> IRequestRepository
-ApproveRequestUseCase --> IEventBus
-RejectRequestUseCase --> IRequestRepository
-RejectRequestUseCase --> IEventBus
 
 @enduml

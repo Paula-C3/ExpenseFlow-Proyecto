@@ -1,74 +1,51 @@
-@startuml use_case
-
+@startuml
 left to right direction
 skinparam packageStyle rectangle
 
-actor Employee
-actor Manager
-actor "Finance Analyst" as FA
-actor "Finance Admin" as FAd
-actor "System Admin" as SA
+actor "Employee" as emp
+actor "Manager" as mgr
+actor "Finance Analyst" as fa
+actor "Finance Admin" as fadmin
+actor "System Admin" as sysadmin
 
-rectangle ExpenseFlow {
+rectangle "ExpenseFlow MVP" {
+  usecase "Crear solicitud de gasto en DRAFT" as UC1
+  usecase "Adjuntar referencia de comprobante" as UC2
+  usecase "Enviar solicitud (estado: SUBMITTED)" as UC3
+  usecase "Consultar estado de solicitudes" as UC4
+  usecase "Corregir y reenviar solicitud" as UC5
+  usecase "Cancelar solicitud" as UC13
 
-    package "Employee Flow" {
-        usecase "Crear solicitud de gasto" as UC1
-        usecase "Enviar solicitud para aprobación" as UC2
-        usecase "Cancelar solicitud" as UC3
-        usecase "Reenviar solicitud tras correcciones" as UC4
-        usecase "Consultar historial y detalle de solicitudes" as UC5
-    }
+  usecase "Revisar solicitudes del equipo" as UC6
+  usecase "Aprobar o Rechazar gasto (Manager)" as UC7
 
-    package "Manager Flow" {
-        usecase "Listar solicitudes pendientes del equipo" as UC6
-        usecase "Ver detalle de solicitud" as UC7
-        usecase "Aprobar solicitud de gasto" as UC8
-        usecase "Rechazar solicitud de gasto" as UC9
-    }
+  usecase "Revisar comprobantes" as UC8
+  usecase "Aprobar o Rechazar gasto (Finance)" as UC14
+  usecase "Solicitar cambios (CHANGES_REQUESTED)" as UC9
+  usecase "Marcar solicitud como pagada (PAID)" as UC10
 
-    package "Finance Flow" {
-        usecase "Listar solicitudes en revisión de Finanzas" as UC10
-        usecase "Solicitar cambios sobre una solicitud" as UC11
-        usecase "Rechazar solicitud desde Finanzas" as UC12
-        usecase "Aprobar gastos mayores a 500 USD" as UC13
-        usecase "Marcar solicitud como pagada (PAID)" as UC14
-    }
+  usecase "Aprobar gasto alto (> 500 USD)" as UC11
 
-    package "Audit & Notifications" {
-        usecase "Ver notificaciones propias" as UC15
-        usecase "Marcar notificación como leída" as UC16
-        usecase "Consultar logs de auditoría" as UC17
-    }
+  usecase "Gestionar usuarios y roles" as UC12
 }
 
-Employee --> UC1
-Employee --> UC2
-Employee --> UC3
-Employee --> UC4
-Employee --> UC5
-Employee --> UC15
-Employee --> UC16
+emp --> UC1
+UC1 ..> UC2 : <<include>>
+emp --> UC3
+emp --> UC4
+emp --> UC5
+emp --> UC13
 
-Manager --> UC6
-Manager --> UC7
-Manager --> UC8
-Manager --> UC9
-Manager --> UC15
-Manager --> UC16
+mgr --> UC6
+mgr --> UC7
 
-FA --> UC10
-FA --> UC11
-FA --> UC12
-FA --> UC15
-FA --> UC16
+fa --> UC8
+fa --> UC14
+fa --> UC9
+fa --> UC10
 
-FAd --> UC13
-FAd --> UC14
-FAd --> UC15
-FAd --> UC16
+fadmin --> UC11
 
-SA --> UC17
-
-UC8 ..> UC9 : <<extends>>
+sysadmin --> UC12
 
 @enduml
