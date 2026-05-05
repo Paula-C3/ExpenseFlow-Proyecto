@@ -1,71 +1,44 @@
 name: CI Full Stack
 
 on:
-  push:
-    branches:
-      - dev
-      - main
-      - feature/**
-  pull_request:
-    branches:
-      - dev
+push:
+branches:
+- dev
+- main
+- feature/ayelen-backend-core
+pull_request:
+branches:
+- dev
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+test:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+```
+steps:
+  - name: Checkout repo
+    uses: actions/checkout@v3
 
-      - name: Create .env file
-        run: |
-          echo "DB_USER=postgres" >> .env
-          echo "DB_PASSWORD=postgres" >> .env
-          echo "DB_NAME=expenseflow" >> .env
-          echo "SECRET_KEY=testkey" >> .env
-          echo "DEBUG=True" >> .env
+  - name: Create .env file
+    run: |
+      echo "DB_USER=postgres" >> .env
+      echo "DB_PASSWORD=postgres" >> .env
+      echo "DB_NAME=expenseflow" >> .env
+      echo "SECRET_KEY=testkey" >> .env
+      echo "DEBUG=True" >> .env
 
-      - name: Build containers
-        run: docker-compose build
+  - name: Build containers
+    run: docker-compose build
 
-      - name: Run containers
-        run: docker-compose up -d
+  - name: Run containers
+    run: docker-compose up -d
 
-      - name: Wait for services
-        run: sleep 20
+  - name: Wait for backend
+    run: sleep 10
 
-      - name: Run backend tests
-        run: docker exec expenseflow_backend bash -c "cd backend && pytest app/tests --tb=short"
+  - name: Run tests inside container
+    run: docker exec expenseflow_backend pytest app/tests
 
-      - name: Stop containers
-        run: docker-compose down
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-backend:latest,${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-backend:${{ github.sha }}
-
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-frontend:latest,${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-frontend:${{ github.sha }}
+  - name: Stop containers
+    run: docker-compose down
+```
