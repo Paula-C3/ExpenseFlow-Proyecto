@@ -5,14 +5,17 @@ WORKDIR /app
 # Dependencias del sistema
 RUN apt-get update && apt-get install -y gcc postgresql-client && rm -rf /var/lib/apt/lists/*
 
-# Dependencias Python
-COPY requirements.txt .
+# Copiar requirements del backend
+COPY backend/requirements.txt /app/requirements.txt
+
+# Instalar dependencias
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Código
-COPY backend/ .
+# Copiar TODO el backend dentro del contenedor
+COPY backend/ /app/
 
-# Puerto dinámico (IMPORTANTE para Render)
-ENV PORT 8000
+# Variable de entorno para Render
+ENV PORT=8000
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
+# estructura real del proyecto
+CMD ["sh", "-c", "uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
