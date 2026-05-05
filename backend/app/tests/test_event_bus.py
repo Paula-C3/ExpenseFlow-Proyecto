@@ -83,7 +83,7 @@ def test_event_bus_with_request_rejection():
     )
     
     # Act
-    request.reject()
+    request.reject(rejector_id=5)
     
     # Assert
     assert len(audit_listener.events) == 1
