@@ -30,6 +30,4 @@ jobs:
           pip install --no-cache-dir -r backend/requirements.txt
 
       - name: Run backend tests
-        run: |
-          cd backend
-          pytest app/tests --tb=short
+        run: pytest backend/app/tests --tb=short
