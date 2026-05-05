@@ -2,17 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalar dependencias del sistema
+# Dependencias del sistema
 RUN apt-get update && apt-get install -y gcc postgresql-client && rm -rf /var/lib/apt/lists/*
 
-# Copiar requirements
+# Dependencias Python
 COPY requirements.txt .
-
-# Instalar dependencias Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código
-COPY . .
+# Código
+COPY backend/ .
 
-# Comando para ejecutar
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Puerto dinámico (IMPORTANTE para Render)
+ENV PORT 8000
+
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
