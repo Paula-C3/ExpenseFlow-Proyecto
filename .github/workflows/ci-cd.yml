@@ -1,0 +1,44 @@
+name: CI Full Stack
+
+on:
+push:
+branches:
+- dev
+- main
+- feature/ayelen-backend-core
+pull_request:
+branches:
+- dev
+
+jobs:
+test:
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout repo
+    uses: actions/checkout@v3
+
+  - name: Create .env file
+    run: |
+      echo "DB_USER=postgres" >> .env
+      echo "DB_PASSWORD=postgres" >> .env
+      echo "DB_NAME=expenseflow" >> .env
+      echo "SECRET_KEY=testkey" >> .env
+      echo "DEBUG=True" >> .env
+
+  - name: Build containers
+    run: docker-compose build
+
+  - name: Run containers
+    run: docker-compose up -d
+
+  - name: Wait for backend
+    run: sleep 10
+
+  - name: Run tests inside container
+    run: docker exec expenseflow_backend pytest app/tests
+
+  - name: Stop containers
+    run: docker-compose down
+```
