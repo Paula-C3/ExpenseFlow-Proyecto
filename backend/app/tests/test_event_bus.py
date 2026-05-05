@@ -42,9 +42,10 @@ def test_event_bus_with_request_approval():
     
     request = Request(
         id=1,
+        employee_id=10,
         title="Compra laptop",
-        user_id=10,
-        approver_id=5,
+        amount=500.00,
+        manager_id=5,
         event_bus=bus
     )
     
@@ -74,9 +75,10 @@ def test_event_bus_with_request_rejection():
     
     request = Request(
         id=2,
+        employee_id=10,
         title="Compra mouse",
-        user_id=10,
-        approver_id=5,
+        amount=50.00,
+        manager_id=5,
         event_bus=bus
     )
     
@@ -99,8 +101,9 @@ def test_event_bus_without_bus():
     # Arrange
     request = Request(
         id=3,
+        employee_id=10,
         title="Compra teclado",
-        user_id=10,
+        amount=75.00,
         event_bus=None
     )
     
@@ -123,9 +126,10 @@ def test_multiple_subscribers_same_event():
     
     request = Request(
         id=4,
+        employee_id=10,
         title="Compra monitor",
-        user_id=10,
-        approver_id=5,
+        amount=300.00,
+        manager_id=5,
         event_bus=bus
     )
     
@@ -148,9 +152,10 @@ def test_event_has_timestamp():
     
     request = Request(
         id=5,
+        employee_id=10,
         title="Compra silla",
-        user_id=10,
-        approver_id=5,
+        amount=150.00,
+        manager_id=5,
         event_bus=bus
     )
     
