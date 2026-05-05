@@ -1,6 +1,6 @@
 import pytest
 
-from backend.app.domain.factories.singleton import Settings, EventBusRegistry
+from app.domain.factories.singleton import Settings, EventBusRegistry
 
 
 def test_settings_singleton():
@@ -34,7 +34,7 @@ def test_event_bus_registry_singleton():
 
 def test_event_bus_registry_persists_event_bus():
     """Test: event bus persiste entre instancias."""
-    from backend.app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
+    from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
     
     registry1 = EventBusRegistry()
     event_bus = MemoryEventBus()

@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, Text        #type: ignore
-from sqlalchemy.orm import relationship        #type: ignore
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Enum, Text
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from backend.app.infrastructure.database import Base
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
+from app.infrastructure.database import Base
+from app.domain.enums import RequestStatus, ExpenseCategory
 
 
 class RequestModel(Base):
@@ -32,10 +32,9 @@ class RequestModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Request
-        from backend.app.domain.states.submitted_state import SubmittedState
-        from backend.app.domain.value_objects import Money, RequestTitle
-        from backend.app.domain.enums import RequestStatus
+        from app.domain.entities.request import Request, SubmittedState
+        from app.domain.value_objects import Money, RequestTitle
+        from app.domain.enums import RequestStatus
 
         # Mapear estado a state object
         state_map = {
@@ -77,7 +76,7 @@ class ApprovalModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Approval
+        from app.domain.entities.request import Approval
         return Approval(
             id=self.id,
             request_id=self.request_id,
@@ -108,7 +107,7 @@ class AuditLogModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.audit_log import AuditLog
+        from app.domain.entities.request import AuditLog
         return AuditLog(
             id=self.id,
             actor_id=self.actor_id,
@@ -142,7 +141,7 @@ class NotificationModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.notification import Notification
+        from app.domain.entities.request import Notification
         return Notification(
             id=self.id,
             user_id=self.user_id,
