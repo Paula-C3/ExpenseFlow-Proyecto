@@ -1,19 +1,21 @@
 import streamlit as st
-from services.api_client import get_requests
+from auth import require_auth, logout
 
-st.title("Solicitudes")
+require_auth()
 
-res = get_requests()
+st.set_page_config(page_title="Dashboard", layout="wide")
 
-if res.status_code == 200:
-    requests = res.json()
+st.title("Dashboard")
 
-    for r in requests:
-        if st.button(f"{r['id']} - {r['title']} ({r['status']})"):
-            st.session_state["request_id"] = r["id"]
-            st.switch_page("pages/detail.py")
-else:
-    st.error("Error al cargar solicitudes")
+st.success("Bienvenido al sistema ExpenseFlow")
 
-if st.button("Crear solicitud"):
-    st.switch_page("pages/create_request.py")
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Crear Solicitud", use_container_width=True):
+        st.switch_page("pages/create_request.py")
+
+with col2:
+    if st.button("Cerrar Sesión", use_container_width=True):
+        logout()
+        st.switch_page("main.py")
