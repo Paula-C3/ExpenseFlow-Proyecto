@@ -11,9 +11,9 @@ if res.status_code == 200:
     for r in requests:
         if st.button(f"{r['id']} - {r['title']} ({r['status']})"):
             st.session_state["request_id"] = r["id"]
-            st.switch_page("app/pages/detail.py")
+            st.switch_page("pages/detail.py")
 else:
     st.error("Error al cargar solicitudes")
 
 if st.button("Crear solicitud"):
-    st.switch_page("app/pages/create_request.py")
+    st.switch_page("pages/create_request.py")

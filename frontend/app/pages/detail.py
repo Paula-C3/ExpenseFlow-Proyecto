@@ -21,4 +21,4 @@ else:
         st.error("Error al cargar detalle")
 
 if st.button("Volver"):
-    st.switch_page("app/pages/home.py")
+    st.switch_page("pages/home.py")

@@ -13,6 +13,6 @@ if st.button("Login"):
         data = res.json()
         st.session_state["token"] = data["access_token"]
         st.session_state["role"] = data["role"]
-        st.switch_page("app/pages/home.py")
+        st.switch_page("pages/home.py") #type: ignore
     else:
         st.error("Credenciales incorrectas")

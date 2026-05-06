@@ -17,6 +17,6 @@ if st.button("Enviar"):
 
         if res.status_code in [200, 201]:
             st.success("Solicitud creada")
-            st.switch_page("app/pages/home.py")
+            st.switch_page("pages/home.py")
         else:
             st.error("Error al crear solicitud")
