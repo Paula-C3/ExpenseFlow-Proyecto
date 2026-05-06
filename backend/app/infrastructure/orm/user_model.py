@@ -4,6 +4,7 @@ from datetime import datetime
 
 from backend.app.infrastructure.database import Base
 from backend.app.domain.enums import RoleType
+from backend.app.infrastructure.orm.request_model import RequestModel, AuditLogModel
 
 
 class RoleModel(Base):
@@ -21,9 +22,9 @@ class RoleModel(Base):
         """Convierte a entidad de dominio."""
         from backend.app.domain.entities.user import Role
         return Role(
-            id=self.id,
-            name=self.name,
-            description=self.description,
+            id=self.id,                         #type: ignore
+            name=self.name,                     #type: ignore
+            description=self.description,       #type: ignore
         )
 
 
@@ -41,9 +42,17 @@ class UserModel(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     role = relationship("RoleModel", back_populates="users")
-    requests = relationship("RequestModel", back_populates="employee")
+    requests = relationship(
+        "RequestModel",
+        foreign_keys=[RequestModel.employee_id],
+        back_populates="employee"
+    )
     notifications = relationship("NotificationModel", back_populates="user")
-    audit_logs = relationship("AuditLogModel", back_populates="actor")
+    audit_logs = relationship(
+        "AuditLogModel",
+        foreign_keys=[AuditLogModel.actor_id],
+        back_populates="actor"
+    )
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
@@ -51,14 +60,14 @@ class UserModel(Base):
         from backend.app.domain.value_objects import Email
         
         return User(
-            id=self.id,
-            email=Email(self.email),
-            full_name=self.full_name,
-            hashed_password=self.hashed_password,
-            role_id=self.role_id,
-            is_active=self.is_active,
-            created_at=self.created_at,
-            updated_at=self.updated_at,
+            id=self.id,                                     #type: ignore
+            email=Email(self.email),                        #type: ignore
+            full_name=self.full_name,                       #type: ignore
+            hashed_password=self.hashed_password,           #type: ignore
+            role_id=self.role_id,                           #type: ignore
+            is_active=self.is_active,                       #type: ignore
+            created_at=self.created_at,                     #type: ignore
+            updated_at=self.updated_at,                     #type: ignore
         )
 
     @staticmethod
