@@ -178,11 +178,19 @@ Configurar en **Settings → Secrets and variables → Actions**:
 
 ## Usuarios de prueba
 
-| Email              | Password   | Rol          |
-|--------------------|------------|--------------|
-| admin@test.com     | admin123   | SYSTEM_ADMIN |
-| manager@test.com   | manager123 | MANAGER      |
-| employee@test.com  | emp123     | EMPLOYEE     |
+Antes de iniciar sesión, poblar la base de datos ejecutando:
+
+```bash
+docker compose exec backend python backend/app/seed.py
+```
+
+| Email              | Password     | Rol              |
+|--------------------|--------------|------------------|
+| admin@test.com     | admin123     | SYSTEM_ADMIN     |
+| manager@test.com   | manager123   | MANAGER          |
+| employee@test.com  | emp123       | EMPLOYEE         |
+| analyst@test.com   | analyst123   | FINANCE_ANALYST  |
+| finance@test.com   | finance123   | FINANCE_ADMIN    |
 
 ---
 
