@@ -8,7 +8,7 @@ from backend.app.application.dtos.request_dto import CreateRequestDTO, RequestRe
 class CreateRequestUseCase:
     def __init__(self, repo: IRequestRepository, event_bus: IEventBus):
         self.repo = repo
-        self.event_bus = event_bus
+        self.event_bus = event_bus  
 
     def execute(self, dto: CreateRequestDTO, employee_id: int) -> RequestResponseDTO:
         request = RequestFactory.create(

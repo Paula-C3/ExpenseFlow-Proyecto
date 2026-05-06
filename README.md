@@ -1,3 +1,4 @@
+
 # 💸 ExpenseFlow
 
 Plataforma de aprobación de gastos y reembolsos.
@@ -16,11 +17,11 @@ El MVP centraliza el flujo: creación de solicitud → aprobación por rol → n
 
 | Persona | Área |
 |---------|------|
-| Persona 1 | Discovery — Contexto y Requerimientos |
-| Persona 2 | Discovery — Flujos, Eventos y Alcance |
-| Persona 3 | UML |
-| Persona 4 | GitHub Project e Issues |
-| Persona 5 | DevOps — Repo, CI/CD, Docker, Render |
+| Persona 1 | Backend Core + Infraestructura + DevOps |
+| Persona 2 | Casos de uso + Patrones de comportamiento |
+| Persona 3 | API de Solicitudes + UML |
+| Persona 4 | Frontend (login, listado, formulario, detalle) |
+| Persona 5 | Frontend (acciones, notificaciones, historial, api_client) |
 
 ---
 
@@ -39,7 +40,7 @@ El MVP centraliza el flujo: creación de solicitud → aprobación por rol → n
 
 ---
 
-## Arquitectura
+## Arquitectura Hexagonal
 
 El proyecto sigue **arquitectura hexagonal** con separación estricta de capas:
 
@@ -51,7 +52,14 @@ backend/app/
 └── api/             # Rutas FastAPI, dependencias, controladores
 ```
 
-El dominio **no depende** de FastAPI, SQLAlchemy ni Streamlit.
+Patrones aplicados:
+| Patrón       | Dónde se usa                  | Por qué |
+|--------------|-------------------------------|---------|
+| Factory      | RequestFactory                | Crear objetos con estado inicial correcto |
+| Builder      | AuditLogBuilder               | Construcción flexible de logs |
+| Singleton    | Settings / EventBusRegistry   | Configuración única |
+| State        | RequestState + estados        | Controlar transiciones válidas |
+| Observer     | EventBus + Listeners          | Notificaciones y auditoría |
 
 ---
 
@@ -165,3 +173,30 @@ Configurar en **Settings → Secrets and variables → Actions**:
 | `DOCKERHUB_TOKEN` | Token de acceso de Docker Hub |
 | `RENDER_DEV_DEPLOY_HOOK` | Deploy hook del servicio dev en Render |
 | `RENDER_PROD_DEPLOY_HOOK` | Deploy hook del servicio prod en Render |
+
+---
+
+## Usuarios de prueba
+
+| Email              | Password   | Rol          |
+|--------------------|------------|--------------|
+| admin@test.com     | admin123   | SYSTEM_ADMIN |
+| manager@test.com   | manager123 | MANAGER      |
+| employee@test.com  | emp123     | EMPLOYEE     |
+
+---
+
+## Flujo principal
+1. Empleado crea solicitud  
+2. Manager aprueba/rechaza (si aplica)  
+3. Finanzas revisa comprobante  
+4. Se marca como READY_FOR_PAYMENT o PAID  
+
+---
+
+## Limitaciones conocidas
+- No hay integración bancaria real  
+- OCR de comprobantes fuera de alcance  
+- Reportes financieros avanzados no incluidos en MVP
+```
+

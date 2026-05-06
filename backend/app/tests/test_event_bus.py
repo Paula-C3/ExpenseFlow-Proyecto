@@ -1,10 +1,10 @@
 import pytest
 from datetime import datetime
 
-from app.domain.entities.request import Request
-from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
-from app.domain.events import RequestApprovedEvent, RequestRejectedEvent
-from app.domain.interfaces.event_bus import IEventListener, DomainEvent
+from backend.app.domain.entities.request import Request
+from backend.app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
+from backend.app.domain.events import RequestApprovedEvent, RequestRejectedEvent
+from backend.app.domain.interfaces.event_bus import IEventListener, DomainEvent
 
 
 class MockAuditListener(IEventListener):
@@ -42,9 +42,10 @@ def test_event_bus_with_request_approval():
     
     request = Request(
         id=1,
+        employee_id=10,
         title="Compra laptop",
-        user_id=10,
-        approver_id=5,
+        amount=500.00,
+        manager_id=5,
         event_bus=bus
     )
     
@@ -74,14 +75,15 @@ def test_event_bus_with_request_rejection():
     
     request = Request(
         id=2,
+        employee_id=10,
         title="Compra mouse",
-        user_id=10,
-        approver_id=5,
+        amount=50.00,
+        manager_id=5,
         event_bus=bus
     )
     
     # Act
-    request.reject()
+    request.reject(rejector_id=5)
     
     # Assert
     assert len(audit_listener.events) == 1
@@ -99,8 +101,9 @@ def test_event_bus_without_bus():
     # Arrange
     request = Request(
         id=3,
+        employee_id=10,
         title="Compra teclado",
-        user_id=10,
+        amount=75.00,
         event_bus=None
     )
     
@@ -123,9 +126,10 @@ def test_multiple_subscribers_same_event():
     
     request = Request(
         id=4,
+        employee_id=10,
         title="Compra monitor",
-        user_id=10,
-        approver_id=5,
+        amount=300.00,
+        manager_id=5,
         event_bus=bus
     )
     
@@ -148,9 +152,10 @@ def test_event_has_timestamp():
     
     request = Request(
         id=5,
+        employee_id=10,
         title="Compra silla",
-        user_id=10,
-        approver_id=5,
+        amount=150.00,
+        manager_id=5,
         event_bus=bus
     )
     

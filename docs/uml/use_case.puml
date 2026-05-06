@@ -1,0 +1,51 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Employee" as emp
+actor "Manager" as mgr
+actor "Finance Analyst" as fa
+actor "Finance Admin" as fadmin
+actor "System Admin" as sysadmin
+
+rectangle "ExpenseFlow MVP" {
+  usecase "Crear solicitud de gasto en DRAFT" as UC1
+  usecase "Adjuntar referencia de comprobante" as UC2
+  usecase "Enviar solicitud (estado: SUBMITTED)" as UC3
+  usecase "Consultar estado de solicitudes" as UC4
+  usecase "Corregir y reenviar solicitud" as UC5
+  usecase "Cancelar solicitud" as UC13
+
+  usecase "Revisar solicitudes del equipo" as UC6
+  usecase "Aprobar o Rechazar gasto (Manager)" as UC7
+
+  usecase "Revisar comprobantes" as UC8
+  usecase "Aprobar o Rechazar gasto (Finance)" as UC14
+  usecase "Solicitar cambios (CHANGES_REQUESTED)" as UC9
+  usecase "Marcar solicitud como pagada (PAID)" as UC10
+
+  usecase "Aprobar gasto alto (> 500 USD)" as UC11
+
+  usecase "Gestionar usuarios y roles" as UC12
+}
+
+emp --> UC1
+UC1 ..> UC2 : <<include>>
+emp --> UC3
+emp --> UC4
+emp --> UC5
+emp --> UC13
+
+mgr --> UC6
+mgr --> UC7
+
+fa --> UC8
+fa --> UC14
+fa --> UC9
+fa --> UC10
+
+fadmin --> UC11
+
+sysadmin --> UC12
+
+@enduml

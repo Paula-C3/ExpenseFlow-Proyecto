@@ -69,7 +69,7 @@ class NotificationListener(IEventListener):
 
     def handle(self, event: DomainEvent) -> None:
         """Maneja eventos para crear notificaciones."""
-        from backend.app.domain.entities.request import Notification
+        from backend.app.domain.entities.notification import Notification
 
         if isinstance(event, RequestSubmittedEvent):
             notification = Notification(

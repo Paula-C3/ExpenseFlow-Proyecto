@@ -1,0 +1,45 @@
+@startuml sequence_create
+
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceParticipantBorderColor #333
+skinparam sequenceLifeLineBorderColor #999
+
+actor Employee
+participant "API\n/requests" as API
+participant "CreateRequest\nUseCase" as UC
+participant "RequestFactory" as Factory
+participant "IRequestRepository" as Repo
+participant "IEventBus" as Bus
+participant "NotificationListener" as NL
+participant "AuditListener" as AL
+participant "NotificationRepository" as NRepo
+participant "AuditLogRepository" as ARepo
+
+Employee -> API : POST /requests\n{title, amount, category, ...}
+API -> API : get_current_user(token)\nextract employee_id, role
+
+API -> UC : execute(dto, employee_id)
+
+UC -> UC : validate dto fields\n(amount > 0, category, description)
+
+UC -> Factory : create(employee_id, title, amount,\ncategory, description, receipt_url)
+Factory -> Factory : set status = DRAFT\nset state = DraftState
+Factory --> UC : request
+
+UC -> Repo : save(request)
+Repo --> UC : saved_request (with id)
+
+UC -> Bus : publish(RequestCreatedEvent\n  request_id, employee_id, amount)
+
+Bus -> NL : handle(RequestCreatedEvent)
+NL -> NRepo : save(Notification)
+NRepo --> NL : notification saved
+
+Bus -> AL : handle(RequestCreatedEvent)
+AL -> ARepo : save(AuditLog\n  action=CREATED)
+ARepo --> AL : log saved
+
+UC --> API : RequestResponseDTO
+API --> Employee : 201 Created\n{id, status: DRAFT, ...}
+
+@enduml
