@@ -18,6 +18,8 @@ class SQLUserRepository(IUserRepository):
         self.db.add(db_user)
         self.db.commit()
         self.db.refresh(db_user)
+        user.id = db_user.id
+        self.db.refresh(db_user)
         return db_user.to_domain()
 
     def find_by_id(self, user_id: int) -> Optional[User]:
