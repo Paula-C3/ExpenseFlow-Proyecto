@@ -10,20 +10,7 @@ st.set_page_config(
 )
 
 st.markdown("""
-<style>
-    [data-testid="stSidebarNav"] {
-        display: none;
-    }
 
-    [data-testid="stSidebar"] {
-        display: none;
-    }
-
-    .block-container {
-        max-width: 620px;
-        padding-top: 3rem;
-    }
-</style>
 """, unsafe_allow_html=True)
 
 require_login()

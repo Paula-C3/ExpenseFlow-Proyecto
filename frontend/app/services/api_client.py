@@ -45,3 +45,18 @@ def get_request_detail(request_id: int):
 
 def create_request(data: dict):
     return _request("POST", "/requests", json=data, headers=_headers())
+
+def get_notifications():
+    return _request(
+        "GET",
+        "/notifications",
+        headers=_headers(),
+    )
+
+
+def mark_notification_as_read(notification_id: int):
+    return _request(
+        "PATCH",
+        f"/notifications/{notification_id}/read",
+        headers=_headers(),
+    )
