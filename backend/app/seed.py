@@ -5,7 +5,6 @@ Ejecutar desde la raíz del proyecto:
 """
 
 import sys
-import os
 
 sys.path.insert(0, "/app")
 

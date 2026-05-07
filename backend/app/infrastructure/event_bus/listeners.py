@@ -1,4 +1,3 @@
-from datetime import datetime
 
 from app.domain.interfaces.event_bus import IEventListener, DomainEvent
 from app.domain.events import (

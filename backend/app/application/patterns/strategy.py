@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from app.domain.value_objects import Money
 
 
 class IApprovalStrategy(ABC):

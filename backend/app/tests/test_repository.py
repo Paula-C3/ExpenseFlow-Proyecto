@@ -2,8 +2,6 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.infrastructure.database import Base
-from app.infrastructure.orm.request_model import RequestModel
-from app.infrastructure.orm.user_model import UserModel
 from app.infrastructure.orm.request_repository import SQLRequestRepository
 from app.infrastructure.orm.user_repository import SQLUserRepository
 from app.domain.entities.request import Request
