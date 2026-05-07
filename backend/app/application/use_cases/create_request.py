@@ -32,8 +32,11 @@ class CreateRequestUseCase:
             request.status = RequestStatus.CHANGES_REQUESTED
         elif dto.amount <= 50:
             request.status = RequestStatus.FINANCE_REVIEW
-        else:
+        elif dto.amount <= 500:
             request.status = RequestStatus.MANAGER_REVIEW
+        else:
+            # > 500 USD: requiere aprobación de Manager y luego Finance Admin
+            request.status = RequestStatus.MANAGER_REVIEW 
 
         saved = self.repo.save(request)
 
