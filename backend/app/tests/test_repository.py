@@ -8,6 +8,8 @@ from app.domain.entities.request import Request
 from app.domain.entities.user import User
 from app.domain.value_objects import Email, Money
 from app.domain.enums import ExpenseCategory, RequestStatus
+from app.infrastructure.orm.request_model import RequestModel
+from app.infrastructure.orm.user_model import UserModel
 
 
 @pytest.fixture
