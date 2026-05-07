@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
+from app.domain.enums import RequestStatus, ExpenseCategory
 
 
 class Request:
@@ -44,7 +44,7 @@ class Request:
         if state is not None:
             self.state = state
         else:
-            from backend.app.domain.states.submitted_state import SubmittedState
+            from app.domain.states.submitted_state import SubmittedState
             self.state = SubmittedState()
 
     def submit(self):
@@ -54,7 +54,7 @@ class Request:
         prev_status = self.status
         self.state.approve(self)
         if self.event_bus:
-            from backend.app.domain.events import RequestApprovedEvent, RequestStatusChangedEvent
+            from app.domain.events import RequestApprovedEvent, RequestStatusChangedEvent
             self.event_bus.publish(RequestApprovedEvent(
                 request_id=self.id,
                 approver_id=approver_id or self.manager_id or self.employee_id,
@@ -71,7 +71,7 @@ class Request:
         prev_status = self.status
         self.state.reject(self)
         if self.event_bus:
-            from backend.app.domain.events import RequestRejectedEvent, RequestStatusChangedEvent
+            from app.domain.events import RequestRejectedEvent, RequestStatusChangedEvent
             self.event_bus.publish(RequestRejectedEvent(
                 request_id=self.id,
                 rejector_id=rejector_id or self.employee_id,
@@ -122,3 +122,4 @@ class Notification:
     created_at: datetime = field(default_factory=datetime.utcnow)
     read_at: Optional[datetime] = None
     id: Optional[int] = None
+

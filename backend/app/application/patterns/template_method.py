@@ -36,7 +36,7 @@ class ApproveRequestProcessor(RequestProcessor):
         self.steps_called = []  # usado en tests para verificar orden
 
     def validate(self, request, actor_id: int, role: str):
-        from backend.app.domain.enums import RoleType
+        from app.domain.enums import RoleType
         allowed = {RoleType.MANAGER.value, RoleType.FINANCE_ADMIN.value, RoleType.SYSTEM_ADMIN.value}
         if role not in allowed:
             raise PermissionError("Rol no autorizado para aprobar")
@@ -53,3 +53,4 @@ class ApproveRequestProcessor(RequestProcessor):
 
     def audit(self, request, actor_id: int):
         self.steps_called.append("audit")
+

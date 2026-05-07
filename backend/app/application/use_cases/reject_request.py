@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from backend.app.application.dtos.request_dto import RejectRequestDTO, RequestResponseDTO
-from backend.app.domain.enums import RequestStatus, RoleType
-from backend.app.domain.events import RequestRejectedEvent, RequestStatusChangedEvent
-from backend.app.domain.interfaces.event_bus import IEventBus
-from backend.app.domain.interfaces.request_repository import IRequestRepository
+from app.application.dtos.request_dto import RejectRequestDTO, RequestResponseDTO
+from app.domain.enums import RequestStatus, RoleType
+from app.domain.events import RequestRejectedEvent, RequestStatusChangedEvent
+from app.domain.interfaces.event_bus import IEventBus
+from app.domain.interfaces.request_repository import IRequestRepository
 
 
 ALLOWED_REJECT_ROLES = {

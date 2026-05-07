@@ -38,3 +38,6 @@ jobs:
 
       - name: Run backend tests
         run: pytest backend/app/tests --tb=short
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend
+

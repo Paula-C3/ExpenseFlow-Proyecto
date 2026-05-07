@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status        #type: ignore
 from sqlalchemy.orm import Session                                   #type: ignore
 
-from backend.app.api.schemas.auth_schemas import UserLogin, UserRegister, TokenResponse
-from backend.app.api.dependencies import create_access_token, get_current_user
-from backend.app.infrastructure.database import get_db
-from backend.app.infrastructure.orm.user_model import UserModel, RoleModel
-from backend.app.infrastructure.security import hash_password, verify_password
-from backend.app.domain.enums import RoleType
+from app.api.schemas.auth_schemas import UserLogin, UserRegister, TokenResponse
+from app.api.dependencies import create_access_token, get_current_user
+from app.infrastructure.database import get_db
+from app.infrastructure.orm.user_model import UserModel, RoleModel
+from app.infrastructure.security import hash_password, verify_password
+from app.domain.enums import RoleType
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -135,3 +135,4 @@ async def list_users(
         }
         for u in users
     ]
+

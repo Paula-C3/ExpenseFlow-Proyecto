@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
-from backend.app.application.patterns.command import (
+from app.application.patterns.command import (
     CommandHandler, ApproveRequestCommand, RejectRequestCommand
 )
-from backend.app.domain.enums import RoleType
+from app.domain.enums import RoleType
 
 
 def test_handler_dispatches_approve():
@@ -31,8 +31,9 @@ def test_handler_dispatches_reject():
 
 def test_unknown_command_raises():
     import pytest
-    from backend.app.application.patterns.command import Command
+    from app.application.patterns.command import Command
 
     handler = CommandHandler(approve_use_case=MagicMock(), reject_use_case=MagicMock())
     with pytest.raises(ValueError):
         handler.handle(Command())
+

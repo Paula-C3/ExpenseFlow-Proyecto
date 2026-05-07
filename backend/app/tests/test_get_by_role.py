@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 from datetime import datetime
-from backend.app.application.use_cases.get_requests_by_role import GetRequestsByRoleUseCase
-from backend.app.domain.enums import RoleType, ExpenseCategory, RequestStatus
-from backend.app.domain.value_objects import Money, RequestTitle
-from backend.app.domain.entities.request import Request
+from app.application.use_cases.get_requests_by_role import GetRequestsByRoleUseCase
+from app.domain.enums import RoleType, ExpenseCategory, RequestStatus
+from app.domain.value_objects import Money, RequestTitle
+from app.domain.entities.request import Request
 
 
 def make_request(i):
@@ -41,3 +41,4 @@ def test_empty_list_returned_when_no_requests():
 
     result = GetRequestsByRoleUseCase(repo=repo).execute(role=RoleType.EMPLOYEE.value, employee_id=1)
     assert result == []
+

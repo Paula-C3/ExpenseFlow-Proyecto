@@ -3,22 +3,22 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException       #type: ignore
 from sqlalchemy.orm import Session                          #type: ignore
 
-from backend.app.api.dependencies import get_current_user
-from backend.app.application.dtos.request_dto import (
+from app.api.dependencies import get_current_user
+from app.application.dtos.request_dto import (
     ApproveRequestDTO,
     CreateRequestDTO,
     RejectRequestDTO,
     RequestResponseDTO,
 )
-from backend.app.application.use_cases.approve_request import ApproveRequestUseCase
-from backend.app.application.use_cases.create_request import CreateRequestUseCase
-from backend.app.application.use_cases.get_request_detail import GetRequestDetailUseCase
-from backend.app.application.use_cases.get_requests_by_role import GetRequestsByRoleUseCase
-from backend.app.application.use_cases.reject_request import RejectRequestUseCase
-from backend.app.domain.enums import RoleType
-from backend.app.domain.factories.singleton import EventBusRegistry
-from backend.app.infrastructure.database import get_db
-from backend.app.infrastructure.orm.request_repository import SQLRequestRepository
+from app.application.use_cases.approve_request import ApproveRequestUseCase
+from app.application.use_cases.create_request import CreateRequestUseCase
+from app.application.use_cases.get_request_detail import GetRequestDetailUseCase
+from app.application.use_cases.get_requests_by_role import GetRequestsByRoleUseCase
+from app.application.use_cases.reject_request import RejectRequestUseCase
+from app.domain.enums import RoleType
+from app.domain.factories.singleton import EventBusRegistry
+from app.infrastructure.database import get_db
+from app.infrastructure.orm.request_repository import SQLRequestRepository
 
 router = APIRouter(prefix="/requests", tags=["requests"])
 

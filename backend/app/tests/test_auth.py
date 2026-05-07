@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from backend.app.main import app
-from backend.app.infrastructure.database import Base, get_db
+from app.main import app
+from app.infrastructure.database import Base, get_db
 
 # Configuración de DB para tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_auth.db"
@@ -77,3 +77,4 @@ def test_users_requires_admin():
     # Intentar acceder a /auth/users sin ser admin
     response = client.get("/auth/users", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 403
+

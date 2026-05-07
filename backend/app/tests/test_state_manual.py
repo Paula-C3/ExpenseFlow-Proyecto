@@ -1,4 +1,4 @@
-from backend.app.domain.entities.request import Request
+from app.domain.entities.request import Request
 
 def run_test():
     r = Request(1, "Compra laptop", 10)

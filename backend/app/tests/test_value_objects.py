@@ -1,6 +1,6 @@
 import pytest
 
-from backend.app.domain.value_objects import Email, Money, RequestTitle
+from app.domain.value_objects import Email, Money, RequestTitle
 
 
 def test_email_valid():
@@ -66,3 +66,4 @@ def test_value_objects_immutable():
     
     with pytest.raises(AttributeError):
         email.value = "other@example.com"
+

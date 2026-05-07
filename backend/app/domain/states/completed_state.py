@@ -1,4 +1,4 @@
-from backend.app.domain.states.request_state import RequestState
+from app.domain.states.request_state import RequestState
 
 
 class CompletedState(RequestState):
@@ -14,3 +14,4 @@ class CompletedState(RequestState):
 
     def complete(self, request):
         raise Exception("Already completed")
+

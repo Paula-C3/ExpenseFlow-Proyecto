@@ -1,16 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.infrastructure.database import init_db, SessionLocal
-from backend.app.api.routes import auth
-from backend.app.api.routes import requests_router
-from backend.app.api.routes import notifications_router
-from backend.app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
-from backend.app.infrastructure.event_bus.listeners import NotificationListener, AuditListener
-from backend.app.infrastructure.orm.notification_repository import NotificationRepository
-from backend.app.infrastructure.orm.audit_log_repository import AuditLogRepository
-from backend.app.domain.factories.singleton import EventBusRegistry
-from backend.app.domain.events import (
+from app.infrastructure.database import init_db, SessionLocal
+from app.api.routes import auth
+from app.api.routes import requests_router
+from app.api.routes import notifications_router
+from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
+from app.infrastructure.event_bus.listeners import NotificationListener, AuditListener
+from app.infrastructure.orm.notification_repository import NotificationRepository
+from app.infrastructure.orm.audit_log_repository import AuditLogRepository
+from app.domain.factories.singleton import EventBusRegistry
+from app.domain.events import (
     RequestApprovedEvent,
     RequestCreatedEvent,
     RequestRejectedEvent,

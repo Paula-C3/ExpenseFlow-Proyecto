@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from backend.app.domain.entities.user import User
+from app.domain.entities.user import User
 
 
 class IUserRepository(ABC):
@@ -36,3 +36,4 @@ class IUserRepository(ABC):
     def delete(self, user_id: int) -> None:
         """Elimina un usuario."""
         pass
+

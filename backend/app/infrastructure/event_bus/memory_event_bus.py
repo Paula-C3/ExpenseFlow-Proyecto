@@ -1,6 +1,6 @@
 from typing import Dict, List, Type
 
-from backend.app.domain.interfaces.event_bus import IEventBus, DomainEvent, IEventListener
+from app.domain.interfaces.event_bus import IEventBus, DomainEvent, IEventListener
 
 
 class MemoryEventBus(IEventBus):
@@ -25,3 +25,4 @@ class MemoryEventBus(IEventBus):
     def get_subscribers(self, event_type: Type[DomainEvent]) -> List[IEventListener]:
         """Obtiene los suscriptores de un tipo de evento."""
         return self._subscribers.get(event_type, [])
+

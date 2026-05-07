@@ -1,16 +1,16 @@
 from datetime import datetime
 
-from backend.app.application.dtos.request_dto import (
+from app.application.dtos.request_dto import (
     ApproveRequestDTO,
     RequestResponseDTO,
 )
-from backend.app.domain.enums import RequestStatus, RoleType
-from backend.app.domain.events import (
+from app.domain.enums import RequestStatus, RoleType
+from app.domain.events import (
     RequestApprovedEvent,
     RequestStatusChangedEvent,
 )
-from backend.app.domain.interfaces.event_bus import IEventBus
-from backend.app.domain.interfaces.request_repository import (
+from app.domain.interfaces.event_bus import IEventBus
+from app.domain.interfaces.request_repository import (
     IRequestRepository,
 )
 

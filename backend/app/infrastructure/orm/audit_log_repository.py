@@ -1,8 +1,8 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session          #type: ignore
 
-from backend.app.domain.entities.audit_log import AuditLog
-from backend.app.infrastructure.orm.request_model import AuditLogModel
+from app.domain.entities.audit_log import AuditLog
+from app.infrastructure.orm.request_model import AuditLogModel
 
 
 class AuditLogRepository:
@@ -45,3 +45,4 @@ class AuditLogRepository:
         """Retorna todos los logs."""
         db_logs = self.db.query(AuditLogModel).order_by(AuditLogModel.timestamp.desc()).all()
         return [log.to_domain() for log in db_logs]
+

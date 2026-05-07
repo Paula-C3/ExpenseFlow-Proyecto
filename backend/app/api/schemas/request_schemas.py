@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
+from app.domain.enums import RequestStatus, ExpenseCategory
 
 
 class CreateRequestDTO(BaseModel):
@@ -42,3 +42,4 @@ class ApproveRequestDTO(BaseModel):
 class RejectRequestDTO(BaseModel):
     """DTO para rechazar solicitud."""
     reason: str = Field(..., min_length=1, max_length=500)
+

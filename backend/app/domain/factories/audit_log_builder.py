@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from backend.app.domain.entities.audit_log import AuditLog
+from app.domain.entities.audit_log import AuditLog
 
 
 class AuditLogBuilder:
@@ -72,3 +72,4 @@ class AuditLogBuilder:
             description=self._description,
             timestamp=self._timestamp,
         )
+

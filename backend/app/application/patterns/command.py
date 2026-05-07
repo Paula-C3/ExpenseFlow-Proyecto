@@ -29,7 +29,7 @@ class CommandHandler:
         self.reject_use_case = reject_use_case
 
     def handle(self, command: Command):
-        from backend.app.application.dtos.request_dto import ApproveRequestDTO, RejectRequestDTO
+        from app.application.dtos.request_dto import ApproveRequestDTO, RejectRequestDTO
 
         if isinstance(command, ApproveRequestCommand):
             dto = ApproveRequestDTO(comment=command.comment)
@@ -49,3 +49,4 @@ class CommandHandler:
             )
         else:
             raise ValueError(f"Command no reconocido: {type(command)}")
+

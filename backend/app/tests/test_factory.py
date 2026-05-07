@@ -1,7 +1,7 @@
 import pytest
 
-from backend.app.domain.factories.request_factory import RequestFactory
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
+from app.domain.factories.request_factory import RequestFactory
+from app.domain.enums import RequestStatus, ExpenseCategory
 
 
 def test_request_factory_create():
@@ -59,3 +59,4 @@ def test_request_factory_from_dict():
     assert request.amount.amount == 250.0
     assert request.receipt_url == "http://example.com/receipt.pdf"
     assert request.status == RequestStatus.SUBMITTED
+

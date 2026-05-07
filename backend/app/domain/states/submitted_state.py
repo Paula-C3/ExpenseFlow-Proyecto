@@ -1,5 +1,5 @@
-from backend.app.domain.states.request_state import RequestState
-from backend.app.domain.enums import RequestStatus
+from app.domain.states.request_state import RequestState
+from app.domain.enums import RequestStatus
 
 
 class SubmittedState(RequestState):
@@ -8,14 +8,15 @@ class SubmittedState(RequestState):
         raise Exception("Already submitted")
 
     def approve(self, request):
-        from backend.app.domain.states.approved_state import ApprovedState
+        from app.domain.states.approved_state import ApprovedState
         request.state = ApprovedState()
         request.status = RequestStatus.APPROVED
 
     def reject(self, request):
-        from backend.app.domain.states.rejected_state import RejectedState
+        from app.domain.states.rejected_state import RejectedState
         request.state = RejectedState()
         request.status = RequestStatus.REJECTED
 
     def complete(self, request):
         raise Exception("Cannot complete before approval")
+

@@ -1,9 +1,9 @@
-from backend.app.application.dtos.request_dto import CreateRequestDTO, RequestResponseDTO
-from backend.app.domain.enums import RequestStatus
-from backend.app.domain.events import RequestCreatedEvent, RequestStatusChangedEvent
-from backend.app.domain.factories.request_factory import RequestFactory
-from backend.app.domain.interfaces.event_bus import IEventBus
-from backend.app.domain.interfaces.request_repository import IRequestRepository
+from app.application.dtos.request_dto import CreateRequestDTO, RequestResponseDTO
+from app.domain.enums import RequestStatus
+from app.domain.events import RequestCreatedEvent, RequestStatusChangedEvent
+from app.domain.factories.request_factory import RequestFactory
+from app.domain.interfaces.event_bus import IEventBus
+from app.domain.interfaces.request_repository import IRequestRepository
 
 
 class CreateRequestUseCase:

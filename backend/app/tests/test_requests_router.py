@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
-from backend.app.application.dtos.request_dto import RequestResponseDTO
-from backend.app.domain.enums import ExpenseCategory, RequestStatus
+from app.application.dtos.request_dto import RequestResponseDTO
+from app.domain.enums import ExpenseCategory, RequestStatus
 
 
 def make_response_dto(**kwargs) -> dict:
@@ -40,8 +40,8 @@ def test_create_request_no_token(client):
 def test_create_request_as_employee(employee_client):
     mock_result = RequestResponseDTO(**make_response_dto())
 
-    with patch("backend.app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
-         patch("backend.app.api.routes.requests_router.CreateRequestUseCase") as MockUseCase:
+    with patch("app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
+         patch("app.api.routes.requests_router.CreateRequestUseCase") as MockUseCase:
         MockUseCase.return_value.execute.return_value = mock_result
 
         response = employee_client.post("/requests", json={
@@ -59,8 +59,8 @@ def test_create_request_as_employee(employee_client):
 # --- POST /requests/{id}/approve ---
 
 def test_approve_request_as_employee_returns_403(employee_client):
-    with patch("backend.app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
-         patch("backend.app.api.routes.requests_router.ApproveRequestUseCase") as MockUseCase:
+    with patch("app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
+         patch("app.api.routes.requests_router.ApproveRequestUseCase") as MockUseCase:
         MockUseCase.return_value.execute.side_effect = PermissionError(
             "Solo MANAGER, FINANCE_ADMIN o SYSTEM_ADMIN pueden aprobar"
         )
@@ -97,3 +97,4 @@ def test_get_request_detail_not_found(employee_client):
         response = employee_client.get("/requests/999")
 
     assert response.status_code == 404
+

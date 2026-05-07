@@ -2,17 +2,17 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Foreig
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from backend.app.infrastructure.database import Base
+from app.infrastructure.database import Base
 
-from backend.app.domain.entities.request import Request, Approval, AuditLog, Notification
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
-from backend.app.domain.value_objects import Money
+from app.domain.entities.request import Request, Approval, AuditLog, Notification
+from app.domain.enums import RequestStatus, ExpenseCategory
+from app.domain.value_objects import Money
 
 # States
-from backend.app.domain.states.submitted_state import SubmittedState
-from backend.app.domain.states.approved_state import ApprovedState
-from backend.app.domain.states.rejected_state import RejectedState
-from backend.app.domain.states.manager_review_state import ManagerReviewState
+from app.domain.states.submitted_state import SubmittedState
+from app.domain.states.approved_state import ApprovedState
+from app.domain.states.rejected_state import RejectedState
+from app.domain.states.manager_review_state import ManagerReviewState
 
 
 class RequestModel(Base):

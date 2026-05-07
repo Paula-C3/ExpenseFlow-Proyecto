@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
-from backend.app.domain.enums import RoleType
-from backend.app.domain.value_objects import Email
+from app.domain.enums import RoleType
+from app.domain.value_objects import Email
 
 
 @dataclass
@@ -36,3 +36,4 @@ class User:
     def email_str(self) -> str:
         """Retorna email como string."""
         return str(self.email) if self.email else ""
+

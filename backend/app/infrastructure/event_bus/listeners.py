@@ -1,15 +1,15 @@
-from backend.app.domain.interfaces.event_bus import IEventListener, DomainEvent
-from backend.app.domain.events import (
+from app.domain.interfaces.event_bus import IEventListener, DomainEvent
+from app.domain.events import (
     RequestApprovedEvent,
     RequestCreatedEvent,
     RequestRejectedEvent,
     RequestSubmittedEvent,
     RequestStatusChangedEvent,
 )
-from backend.app.domain.factories.audit_log_builder import AuditLogBuilder
-from backend.app.domain.entities.notification import Notification
-from backend.app.domain.enums import RoleType, RequestStatus
-from backend.app.infrastructure.orm.user_model import UserModel
+from app.domain.factories.audit_log_builder import AuditLogBuilder
+from app.domain.entities.notification import Notification
+from app.domain.enums import RoleType, RequestStatus
+from app.infrastructure.orm.user_model import UserModel
 
 
 class AuditListener(IEventListener):

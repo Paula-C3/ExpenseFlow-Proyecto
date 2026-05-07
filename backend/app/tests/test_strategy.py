@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
-from backend.app.application.patterns.strategy import (
+from app.application.patterns.strategy import (
     ApprovalStrategySelector, HighAmountApprovalStrategy, SimpleApprovalStrategy
 )
-from backend.app.domain.value_objects import Money
+from app.domain.value_objects import Money
 
 
 def make_request(amount: float):
@@ -30,3 +30,4 @@ def test_high_amount_high_strategy():
     strategy = ApprovalStrategySelector.select(r)
     assert isinstance(strategy, HighAmountApprovalStrategy)
     assert strategy.requires_additional_approval(r) is True
+

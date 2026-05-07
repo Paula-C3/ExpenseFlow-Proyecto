@@ -1,7 +1,7 @@
 from typing import List
-from backend.app.domain.interfaces.request_repository import IRequestRepository
-from backend.app.domain.enums import RoleType
-from backend.app.application.dtos.request_dto import RequestResponseDTO
+from app.domain.interfaces.request_repository import IRequestRepository
+from app.domain.enums import RoleType
+from app.application.dtos.request_dto import RequestResponseDTO
 
 
 class GetRequestsByRoleUseCase:
@@ -14,3 +14,4 @@ class GetRequestsByRoleUseCase:
         else:
             requests = self.repo.find_by_role(RoleType(role))
         return [RequestResponseDTO.from_domain(r) for r in requests]
+

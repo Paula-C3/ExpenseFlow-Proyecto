@@ -2,9 +2,9 @@ import pytest                   #type: ignore
 from unittest.mock import MagicMock
 from fastapi.testclient import TestClient #type: ignore
 
-from backend.app.main import app
-from backend.app.api.dependencies import get_current_user
-from backend.app.infrastructure.database import get_db
+from app.main import app
+from app.api.dependencies import get_current_user
+from app.infrastructure.database import get_db
 from app.domain.factories.singleton import EventBusRegistry
 from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
 

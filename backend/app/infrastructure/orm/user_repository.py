@@ -1,9 +1,9 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session      #type: ignore
 
-from backend.app.domain.entities.user import User
-from backend.app.domain.interfaces.user_repository import IUserRepository
-from backend.app.infrastructure.orm.user_model import UserModel
+from app.domain.entities.user import User
+from app.domain.interfaces.user_repository import IUserRepository
+from app.infrastructure.orm.user_model import UserModel
 
 
 class SQLUserRepository(IUserRepository):
@@ -59,3 +59,4 @@ class SQLUserRepository(IUserRepository):
         if db_user:
             self.db.delete(db_user)
             self.db.commit()
+

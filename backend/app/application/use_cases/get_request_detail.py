@@ -1,5 +1,5 @@
-from backend.app.domain.interfaces.request_repository import IRequestRepository
-from backend.app.application.dtos.request_dto import RequestResponseDTO
+from app.domain.interfaces.request_repository import IRequestRepository
+from app.application.dtos.request_dto import RequestResponseDTO
 
 
 class GetRequestDetailUseCase:
@@ -11,3 +11,4 @@ class GetRequestDetailUseCase:
         if not request:
             raise ValueError(f"Solicitud {request_id} no encontrada")
         return RequestResponseDTO.from_domain(request)
+
