@@ -1,5 +1,4 @@
 from typing import Optional, List
-from backend.app.domain.entities import request
 from sqlalchemy.orm import Session
 
 from backend.app.domain.entities.request import Request
