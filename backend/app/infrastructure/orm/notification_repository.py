@@ -44,7 +44,7 @@ class NotificationRepository:
         """Busca notificaciones no leídas de un usuario."""
         db_notifs = self.db.query(NotificationModel).filter(
             NotificationModel.user_id == user_id,
-            NotificationModel.is_read == False
+            NotificationModel.is_read.is_(False)
         ).all()
         return [n.to_domain() for n in db_notifs]
 

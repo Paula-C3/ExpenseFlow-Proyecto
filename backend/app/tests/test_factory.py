@@ -2,7 +2,6 @@ import pytest
 
 from app.domain.factories.request_factory import RequestFactory
 from app.domain.enums import RequestStatus, ExpenseCategory
-from app.domain.value_objects import RequestTitle, Money
 
 
 def test_request_factory_create():

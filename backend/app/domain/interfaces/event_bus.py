@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List
+from typing import List
 
 
 class DomainEvent(ABC):

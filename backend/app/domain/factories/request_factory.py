@@ -3,7 +3,7 @@ from typing import Dict, Any
 
 from app.domain.entities.request import Request
 from app.domain.states.submitted_state import SubmittedState
-from app.domain.enums import ExpenseCategory, RequestStatus
+from app.domain.enums import ExpenseCategory
 from app.domain.value_objects import Money, RequestTitle
 
 
