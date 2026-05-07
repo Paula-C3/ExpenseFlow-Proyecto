@@ -1,19 +1,42 @@
 import streamlit as st
-from services.api_client import get_requests
 
-st.title("Solicitudes")
+from auth import require_login, logout
 
-res = get_requests()
+st.set_page_config(
+    page_title="Dashboard",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-if res.status_code == 200:
-    requests = res.json()
+st.markdown("""
+<style>
+    [data-testid="stSidebarNav"] {
+        display: none;
+    }
 
-    for r in requests:
-        if st.button(f"{r['id']} - {r['title']} ({r['status']})"):
-            st.session_state["request_id"] = r["id"]
-            st.switch_page("pages/detail.py")
-else:
-    st.error("Error al cargar solicitudes")
+    [data-testid="stSidebar"] {
+        display: none;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-if st.button("Crear solicitud"):
-    st.switch_page("pages/create_request.py")
+require_login()
+
+st.title("Dashboard")
+
+st.success("Bienvenido a ExpenseFlow")
+
+st.write(f"Rol actual: {st.session_state.get('role')}")
+
+st.markdown("---")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Crear Solicitud", use_container_width=True):
+        st.switch_page("pages/create_request.py")
+
+with col2:
+    if st.button("Cerrar Sesión", use_container_width=True):
+        logout()
+        st.switch_page("pages/login.py")

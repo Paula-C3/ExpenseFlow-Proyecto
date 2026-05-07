@@ -1,7 +1,7 @@
 from typing import List
-from app.domain.interfaces.request_repository import IRequestRepository
-from app.domain.enums import RoleType
-from app.application.dtos.request_dto import RequestResponseDTO
+from backend.app.domain.interfaces.request_repository import IRequestRepository
+from backend.app.domain.enums import RoleType
+from backend.app.application.dtos.request_dto import RequestResponseDTO
 
 
 class GetRequestsByRoleUseCase:

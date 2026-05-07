@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
-from app.application.patterns.strategy import (
+from backend.app.application.patterns.strategy import (
     ApprovalStrategySelector, HighAmountApprovalStrategy, SimpleApprovalStrategy
 )
-from app.domain.value_objects import Money
+from backend.app.domain.value_objects import Money
 
 
 def make_request(amount: float):

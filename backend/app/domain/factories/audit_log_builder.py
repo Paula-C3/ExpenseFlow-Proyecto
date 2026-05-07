@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from app.domain.entities.audit_log import AuditLog
+from backend.app.domain.entities.audit_log import AuditLog
 
 
 class AuditLogBuilder:

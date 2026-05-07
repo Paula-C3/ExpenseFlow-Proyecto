@@ -1,10 +1,10 @@
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session      #type: ignore
 
-from app.domain.entities.request import Request
-from app.domain.interfaces.request_repository import IRequestRepository
-from app.domain.enums import RequestStatus, RoleType
-from app.infrastructure.orm.request_model import RequestModel
+from backend.app.domain.entities.request import Request
+from backend.app.domain.interfaces.request_repository import IRequestRepository
+from backend.app.domain.enums import RequestStatus, RoleType
+from backend.app.infrastructure.orm.request_model import RequestModel
 
 
 class SQLRequestRepository(IRequestRepository):
@@ -30,6 +30,8 @@ class SQLRequestRepository(IRequestRepository):
         )
         self.db.add(db_request)
         self.db.commit()
+        self.db.refresh(db_request)
+        request.id = db_request.id
         self.db.refresh(db_request)
         return db_request.to_domain()
 

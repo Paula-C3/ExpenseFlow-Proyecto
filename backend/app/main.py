@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.infrastructure.database import init_db
-from app.api.routes import auth
-from app.api.routes import requests_router
-from app.api.routes import notifications_router
-from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
-from app.domain.factories.singleton import EventBusRegistry
+from backend.app.infrastructure.database import init_db
+from backend.app.api.routes import auth
+from backend.app.api.routes import requests_router
+from backend.app.api.routes import notifications_router
+from backend.app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
+from backend.app.domain.factories.singleton import EventBusRegistry
 
 app = FastAPI(
     title="ExpenseFlow API",
