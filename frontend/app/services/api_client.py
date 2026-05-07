@@ -23,12 +23,16 @@ def _request(method: str, path: str, **kwargs):
     )
 
 
-def login(email: str, password: str):
+def login_user(email: str, password: str):
     return _request(
         "POST",
         "/auth/login",
         json={"email": email, "password": password},
     )
+
+
+def login(email: str, password: str):
+    return login_user(email, password)
 
 
 def get_requests():
