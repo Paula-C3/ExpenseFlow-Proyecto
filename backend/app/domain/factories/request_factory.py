@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Dict, Any
 
-from backend.app.domain.entities.request import Request
-from backend.app.domain.states.submitted_state import SubmittedState
-from backend.app.domain.enums import ExpenseCategory
-from backend.app.domain.value_objects import Money, RequestTitle
+from app.domain.entities.request import Request
+from app.domain.states.submitted_state import SubmittedState
+from app.domain.enums import ExpenseCategory
+from app.domain.value_objects import Money, RequestTitle
 
 
 class RequestFactory:
