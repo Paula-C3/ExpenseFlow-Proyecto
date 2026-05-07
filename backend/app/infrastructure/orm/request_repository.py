@@ -1,5 +1,5 @@
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session      #type: ignore
 
 from backend.app.domain.entities.request import Request
 from backend.app.domain.interfaces.request_repository import IRequestRepository

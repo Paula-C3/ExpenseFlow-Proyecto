@@ -1,6 +1,6 @@
-import pytest
+import pytest                   #type: ignore
 from unittest.mock import MagicMock
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient #type: ignore
 
 from backend.app.main import app
 from backend.app.api.dependencies import get_current_user
