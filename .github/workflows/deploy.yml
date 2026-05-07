@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: backend/Dockerfile
+          file: backend/Dockerfile        # ← "file" no "dockerfile"
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-backend:${{ steps.tags.outputs.tag }}
