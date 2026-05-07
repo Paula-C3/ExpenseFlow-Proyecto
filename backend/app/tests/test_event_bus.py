@@ -1,10 +1,10 @@
 import pytest
 from datetime import datetime
 
-from app.domain.entities.request import Request
-from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
-from app.domain.events import RequestApprovedEvent, RequestRejectedEvent
-from app.domain.interfaces.event_bus import IEventListener, DomainEvent
+from backend.app.domain.entities.request import Request
+from backend.app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
+from backend.app.domain.events import RequestApprovedEvent, RequestRejectedEvent
+from backend.app.domain.interfaces.event_bus import IEventListener, DomainEvent
 
 
 class MockAuditListener(IEventListener):

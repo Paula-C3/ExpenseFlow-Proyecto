@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from app.domain.entities.notification import Notification
+from backend.app.domain.entities.notification import Notification
 
 
 def make_notification(user_id: int, notif_id: int = 1) -> Notification:
@@ -78,7 +78,7 @@ def test_get_audit_logs_as_non_admin_returns_403(employee_client):
 
 
 def test_get_audit_logs_as_admin(admin_client):
-    from app.domain.entities.audit_log import AuditLog
+    from backend.app.domain.entities.audit_log import AuditLog
 
     log = AuditLog(
         id=1,
@@ -101,7 +101,7 @@ def test_get_audit_logs_as_admin(admin_client):
 
 
 def test_get_audit_logs_filtered_by_request(admin_client):
-    from app.domain.entities.audit_log import AuditLog
+    from backend.app.domain.entities.audit_log import AuditLog
 
     log = AuditLog(
         id=1,

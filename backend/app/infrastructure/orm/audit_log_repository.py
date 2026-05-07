@@ -1,8 +1,8 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session          #type: ignore
 
-from app.domain.entities.audit_log import AuditLog
-from app.infrastructure.orm.request_model import AuditLogModel
+from backend.app.domain.entities.audit_log import AuditLog
+from backend.app.infrastructure.orm.request_model import AuditLogModel
 
 
 class AuditLogRepository:

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from app.domain.interfaces.event_bus import DomainEvent
-from app.domain.enums import RequestStatus
+from backend.app.domain.interfaces.event_bus import DomainEvent
+from backend.app.domain.enums import RequestStatus
 
 
 @dataclass

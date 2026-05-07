@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 
-from app.domain.factories.audit_log_builder import AuditLogBuilder
+from backend.app.domain.factories.audit_log_builder import AuditLogBuilder
 
 
 def test_builder_completo():

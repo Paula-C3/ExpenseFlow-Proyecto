@@ -1,6 +1,6 @@
 import pytest
 
-from app.domain.value_objects import Email, Money, RequestTitle
+from backend.app.domain.value_objects import Email, Money, RequestTitle
 
 
 def test_email_valid():

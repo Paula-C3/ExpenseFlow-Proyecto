@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
-from app.application.dtos.request_dto import RequestResponseDTO
-from app.domain.enums import ExpenseCategory, RequestStatus
+from backend.app.application.dtos.request_dto import RequestResponseDTO
+from backend.app.domain.enums import ExpenseCategory, RequestStatus
 
 
 def make_response_dto(**kwargs) -> dict:

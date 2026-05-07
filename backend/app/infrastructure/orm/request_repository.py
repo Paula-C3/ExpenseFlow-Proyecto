@@ -1,10 +1,10 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
 
-from app.domain.entities.request import Request
-from app.domain.interfaces.request_repository import IRequestRepository
-from app.domain.enums import RequestStatus, RoleType
-from app.infrastructure.orm.request_model import RequestModel
+from backend.app.domain.entities.request import Request
+from backend.app.domain.interfaces.request_repository import IRequestRepository
+from backend.app.domain.enums import RequestStatus, RoleType
+from backend.app.infrastructure.orm.request_model import RequestModel
 
 
 class SQLRequestRepository(IRequestRepository):

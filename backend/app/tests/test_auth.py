@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.main import app
-from app.infrastructure.database import Base, get_db
+from backend.app.main import app
+from backend.app.infrastructure.database import Base, get_db
 
 # Configuración de DB para tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_auth.db"

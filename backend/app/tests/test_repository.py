@@ -1,13 +1,13 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.infrastructure.database import Base
-from app.infrastructure.orm.request_repository import SQLRequestRepository
-from app.infrastructure.orm.user_repository import SQLUserRepository
-from app.domain.entities.request import Request
-from app.domain.entities.user import User
-from app.domain.value_objects import Email, Money
-from app.domain.enums import ExpenseCategory, RequestStatus
+from backend.app.infrastructure.database import Base
+from backend.app.infrastructure.orm.request_repository import SQLRequestRepository
+from backend.app.infrastructure.orm.user_repository import SQLUserRepository
+from backend.app.domain.entities.request import Request
+from backend.app.domain.entities.user import User
+from backend.app.domain.value_objects import Email, Money
+from backend.app.domain.enums import ExpenseCategory, RequestStatus
 
 
 @pytest.fixture

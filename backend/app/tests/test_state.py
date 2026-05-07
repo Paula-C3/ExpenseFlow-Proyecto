@@ -1,11 +1,11 @@
 import pytest
 
-from app.domain.entities.request import Request
-from app.domain.states.submitted_state import SubmittedState
-from app.domain.states.manager_review_state import ManagerReviewState
-from app.domain.states.approved_state import ApprovedState
-from app.domain.states.rejected_state import RejectedState
-from app.domain.enums import RequestStatus, ExpenseCategory
+from backend.app.domain.entities.request import Request
+from backend.app.domain.states.submitted_state import SubmittedState
+from backend.app.domain.states.manager_review_state import ManagerReviewState
+from backend.app.domain.states.approved_state import ApprovedState
+from backend.app.domain.states.rejected_state import RejectedState
+from backend.app.domain.enums import RequestStatus, ExpenseCategory
 
 
 def make_request(state):
