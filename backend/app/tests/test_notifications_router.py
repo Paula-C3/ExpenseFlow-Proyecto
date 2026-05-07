@@ -65,7 +65,7 @@ def test_mark_notification_as_read(employee_client):
 
 def test_mark_notification_as_read_not_found(employee_client):
     with patch(
-        "app.api.routes.notifications_router.NotificationRepository"
+        "backend.app.api.routes.notifications_router.NotificationRepository"
     ) as MockRepo:
         MockRepo.return_value.mark_as_read.return_value = None
 
