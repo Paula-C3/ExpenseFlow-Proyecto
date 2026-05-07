@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st          #type: ignore
 from services.api_client import get_request_detail
 
 request_id = st.session_state.get("request_id")

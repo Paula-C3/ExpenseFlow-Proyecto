@@ -1,5 +1,5 @@
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session      #type: ignore
 
 from backend.app.domain.entities.request import Request
 from backend.app.domain.interfaces.request_repository import IRequestRepository
@@ -30,6 +30,8 @@ class SQLRequestRepository(IRequestRepository):
         )
         self.db.add(db_request)
         self.db.commit()
+        self.db.refresh(db_request)
+        request.id = db_request.id
         self.db.refresh(db_request)
         return db_request.to_domain()
 

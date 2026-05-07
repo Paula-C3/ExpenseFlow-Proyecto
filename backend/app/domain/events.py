@@ -36,9 +36,9 @@ class RequestApprovedEvent(DomainEvent):
     """Evento: Solicitud aprobada."""
     request_id: int
     approver_id: int
+    employee_id: int = 0
     comment: str = ""
     timestamp: datetime = None
-
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.utcnow()
@@ -49,9 +49,9 @@ class RequestRejectedEvent(DomainEvent):
     """Evento: Solicitud rechazada."""
     request_id: int
     rejector_id: int
+    employee_id: int = 0
     reason: str = ""
     timestamp: datetime = None
-
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.utcnow()

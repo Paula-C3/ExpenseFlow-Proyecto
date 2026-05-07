@@ -1,56 +1,67 @@
 import pytest
 
-from app.domain.entities.request import (
-    Request,
-    SubmittedState,
-    ManagerReviewState,
-    ApprovedState,
-    RejectedState,
-)
-from app.domain.enums import RequestStatus
-from app.domain.exceptions import InvalidStateTransition
+from backend.app.domain.entities.request import Request
+from backend.app.domain.states.submitted_state import SubmittedState
+from backend.app.domain.states.manager_review_state import ManagerReviewState
+from backend.app.domain.states.approved_state import ApprovedState
+from backend.app.domain.states.rejected_state import RejectedState
+from backend.app.domain.enums import RequestStatus, ExpenseCategory
 
 
-def test_submitted_to_manager_review():
-    """Test: SUBMITTED → MANAGER_REVIEW válido."""
-    request = Request(state=SubmittedState())
+def make_request(state):
+    return Request(
+        employee_id=1,
+        title="Test expense",
+        amount=100.0,
+        category=ExpenseCategory.TOOLS,
+        state=state,
+    )
+
+
+def test_submitted_approve():
+    """SUBMITTED → APPROVED via approve()"""
+    request = make_request(SubmittedState())
     assert request.status == RequestStatus.SUBMITTED
-    
-    request.transition_to(RequestStatus.MANAGER_REVIEW)
-    assert request.status == RequestStatus.MANAGER_REVIEW
+    request.approve()
+    assert request.status == RequestStatus.APPROVED
 
 
-def test_submitted_to_cancelled():
-    """Test: SUBMITTED → CANCELLED válido."""
-    request = Request(state=SubmittedState())
-    request.transition_to(RequestStatus.CANCELLED)
-    assert request.status == RequestStatus.CANCELLED
+def test_submitted_reject():
+    """SUBMITTED → REJECTED via reject()"""
+    request = make_request(SubmittedState())
+    request.reject()
+    assert request.status == RequestStatus.REJECTED
 
 
-def test_invalid_transition():
-    """Test: APPROVED → SUBMITTED lanza excepción."""
-    request = Request(state=ApprovedState())
-    
-    with pytest.raises(InvalidStateTransition):
-        request.transition_to(RequestStatus.SUBMITTED)
+def test_submitted_submit_raises():
+    """SUBMITTED → submit() lanza excepción"""
+    request = make_request(SubmittedState())
+    with pytest.raises(Exception):
+        request.submit()
 
 
 def test_manager_review_to_approved():
-    """Test: MANAGER_REVIEW → APPROVED válido."""
-    request = Request(state=ManagerReviewState())
-    request.transition_to(RequestStatus.APPROVED)
+    """MANAGER_REVIEW → APPROVED"""
+    request = make_request(ManagerReviewState())
+    request.approve()
     assert request.status == RequestStatus.APPROVED
 
 
 def test_manager_review_to_rejected():
-    """Test: MANAGER_REVIEW → REJECTED válido."""
-    request = Request(state=ManagerReviewState())
-    request.transition_to(RequestStatus.REJECTED)
+    """MANAGER_REVIEW → REJECTED"""
+    request = make_request(ManagerReviewState())
+    request.reject()
     assert request.status == RequestStatus.REJECTED
 
 
-def test_rejected_to_submitted():
-    """Test: REJECTED → SUBMITTED válido para reenvio."""
-    request = Request(state=RejectedState())
-    request.transition_to(RequestStatus.SUBMITTED)
+def test_rejected_can_resubmit():
+    """REJECTED → submit() permite reenviar"""
+    request = make_request(RejectedState())
+    request.submit()
     assert request.status == RequestStatus.SUBMITTED
+
+
+def test_approved_complete():
+    """APPROVED → complete()"""
+    request = make_request(ApprovedState())
+    request.complete()

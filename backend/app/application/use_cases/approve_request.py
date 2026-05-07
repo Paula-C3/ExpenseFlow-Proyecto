@@ -1,7 +1,9 @@
+from datetime import datetime
 from backend.app.domain.interfaces.request_repository import IRequestRepository
 from backend.app.domain.interfaces.event_bus import IEventBus
 from backend.app.domain.enums import RoleType
 from backend.app.application.dtos.request_dto import ApproveRequestDTO, RequestResponseDTO
+from backend.app.domain.events import RequestApprovedEvent
 
 ALLOWED_APPROVE_ROLES = {RoleType.MANAGER.value, RoleType.FINANCE_ADMIN.value, RoleType.SYSTEM_ADMIN.value}
 
@@ -19,7 +21,15 @@ class ApproveRequestUseCase:
         if not request:
             raise ValueError(f"Solicitud {request_id} no encontrada")
 
-        request.event_bus = self.event_bus
         request.approve(approver_id=approver_id, comment=dto.comment or "")
         updated = self.repo.update(request)
+
+        self.event_bus.publish(RequestApprovedEvent(
+            request_id=request_id,
+            approver_id=approver_id,
+            employee_id=request.employee_id,
+            comment=dto.comment or "",
+            timestamp=datetime.utcnow(),
+        ))
+
         return RequestResponseDTO.from_domain(updated)
