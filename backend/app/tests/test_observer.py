@@ -1,6 +1,6 @@
-from backend.app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
-from backend.app.domain.events import RequestSubmittedEvent, RequestApprovedEvent
-from backend.app.domain.interfaces.event_bus import IEventListener, DomainEvent
+from app.infrastructure.event_bus.memory_event_bus import MemoryEventBus
+from app.domain.events import RequestSubmittedEvent, RequestApprovedEvent
+from app.domain.interfaces.event_bus import IEventListener, DomainEvent
 
 
 class MockListener(IEventListener):

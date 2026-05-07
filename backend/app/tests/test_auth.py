@@ -5,12 +5,15 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.infrastructure.database import Base, get_db
 
-# Configuración de DB en memoria
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-TestingSessionLocal = sessionmaker(bind=engine)
+# Configuración de DB para tests
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test_auth.db"
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
-
 def override_get_db():
     db = TestingSessionLocal()
     try:

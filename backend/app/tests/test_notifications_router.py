@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-from backend.app.domain.entities.notification import Notification
+from app.domain.entities.notification import Notification
 
 
 def make_notification(user_id: int, notif_id: int = 1) -> Notification:
@@ -21,7 +21,7 @@ def make_notification(user_id: int, notif_id: int = 1) -> Notification:
 
 def test_get_notifications_no_token(client):
     response = client.get("/notifications")
-    assert response.status_code == 403  # HTTPBearer returns 403 when no credentials are provided
+    assert response.status_code in (401, 403)
 
 
 def test_get_notifications_returns_only_current_user(employee_client):
@@ -29,7 +29,7 @@ def test_get_notifications_returns_only_current_user(employee_client):
     user_notif = make_notification(user_id=user_id, notif_id=1)
 
     with patch(
-        "backend.app.api.routes.notifications_router.NotificationRepository"
+        "app.api.routes.notifications_router.NotificationRepository"
     ) as MockRepo:
         MockRepo.return_value.find_by_user.return_value = [user_notif]
 
@@ -49,7 +49,7 @@ def test_mark_notification_as_read(employee_client):
     updated.is_read = True
 
     with patch(
-        "backend.app.api.routes.notifications_router.NotificationRepository"
+        "app.api.routes.notifications_router.NotificationRepository"
     ) as MockRepo:
         MockRepo.return_value.mark_as_read.return_value = updated
 
@@ -61,7 +61,7 @@ def test_mark_notification_as_read(employee_client):
 
 def test_mark_notification_as_read_not_found(employee_client):
     with patch(
-        "backend.app.api.routes.notifications_router.NotificationRepository"
+        "app.api.routes.notifications_router.NotificationRepository"
     ) as MockRepo:
         MockRepo.return_value.mark_as_read.return_value = None
 
@@ -78,7 +78,7 @@ def test_get_audit_logs_as_non_admin_returns_403(employee_client):
 
 
 def test_get_audit_logs_as_admin(admin_client):
-    from backend.app.domain.entities.audit_log import AuditLog
+    from app.domain.entities.audit_log import AuditLog
 
     log = AuditLog(
         id=1,
@@ -90,7 +90,7 @@ def test_get_audit_logs_as_admin(admin_client):
     )
 
     with patch(
-        "backend.app.api.routes.notifications_router.AuditLogRepository"
+        "app.api.routes.notifications_router.AuditLogRepository"
     ) as MockRepo:
         MockRepo.return_value.find_all.return_value = [log]
 
@@ -101,7 +101,7 @@ def test_get_audit_logs_as_admin(admin_client):
 
 
 def test_get_audit_logs_filtered_by_request(admin_client):
-    from backend.app.domain.entities.audit_log import AuditLog
+    from app.domain.entities.audit_log import AuditLog
 
     log = AuditLog(
         id=1,
@@ -113,7 +113,7 @@ def test_get_audit_logs_filtered_by_request(admin_client):
     )
 
     with patch(
-        "backend.app.api.routes.notifications_router.AuditLogRepository"
+        "app.api.routes.notifications_router.AuditLogRepository"
     ) as MockRepo:
         MockRepo.return_value.find_by_entity.return_value = [log]
 

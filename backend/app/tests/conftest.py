@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 
-from backend.app.main import app
-from backend.app.api.dependencies import get_current_user
-from backend.app.infrastructure.database import get_db
+from app.main import app
+from app.api.dependencies import get_current_user
+from app.infrastructure.database import get_db
 
 
 def make_user(user_id: int, role: str, email: str = "test@test.com") -> dict:

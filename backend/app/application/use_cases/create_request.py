@@ -1,8 +1,8 @@
-from backend.app.domain.interfaces.request_repository import IRequestRepository
-from backend.app.domain.interfaces.event_bus import IEventBus
-from backend.app.domain.factories.request_factory import RequestFactory
-from backend.app.domain.events import RequestCreatedEvent
-from backend.app.application.dtos.request_dto import CreateRequestDTO, RequestResponseDTO
+from app.domain.interfaces.request_repository import IRequestRepository
+from app.domain.interfaces.event_bus import IEventBus
+from app.domain.factories.request_factory import RequestFactory
+from app.domain.events import RequestCreatedEvent
+from app.application.dtos.request_dto import CreateRequestDTO, RequestResponseDTO
 
 
 class CreateRequestUseCase:

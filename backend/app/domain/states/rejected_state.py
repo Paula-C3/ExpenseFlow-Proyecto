@@ -1,11 +1,11 @@
-from backend.app.domain.states.request_state import RequestState
-from backend.app.domain.enums import RequestStatus
+from app.domain.states.request_state import RequestState
+from app.domain.enums import RequestStatus
 
 
 class RejectedState(RequestState):
 
     def submit(self, request):
-        from backend.app.domain.states.submitted_state import SubmittedState
+        from app.domain.states.submitted_state import SubmittedState
         request.state = SubmittedState()
         request.status = RequestStatus.SUBMITTED
 

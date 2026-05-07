@@ -3,11 +3,11 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query        #type: ignore
 from sqlalchemy.orm import Session                                  #type: ignore
 
-from backend.app.api.dependencies import get_current_user, require_role
-from backend.app.application.dtos.notification_dto import AuditLogDTO, NotificationDTO
-from backend.app.infrastructure.database import get_db
-from backend.app.infrastructure.orm.audit_log_repository import AuditLogRepository
-from backend.app.infrastructure.orm.notification_repository import NotificationRepository
+from app.api.dependencies import get_current_user, require_role
+from app.application.dtos.notification_dto import AuditLogDTO, NotificationDTO
+from app.infrastructure.database import get_db
+from app.infrastructure.orm.audit_log_repository import AuditLogRepository
+from app.infrastructure.orm.notification_repository import NotificationRepository
 
 router = APIRouter(tags=["notifications"])
 

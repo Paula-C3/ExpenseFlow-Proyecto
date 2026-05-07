@@ -2,13 +2,22 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Foreig
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from backend.app.infrastructure.database import Base
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
+from app.infrastructure.database import Base
+
+from app.domain.entities.request import Request, Approval, AuditLog, Notification
+from app.domain.enums import RequestStatus, ExpenseCategory
+from app.domain.value_objects import Money
+
+# States
+from app.domain.states.submitted_state import SubmittedState
+from app.domain.states.approved_state import ApprovedState
+from app.domain.states.rejected_state import RejectedState
+from app.domain.states.manager_review_state import ManagerReviewState
 
 
 class RequestModel(Base):
-    """Modelo ORM para Request."""
     __tablename__ = "requests"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, index=True)
     employee_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -18,40 +27,46 @@ class RequestModel(Base):
     currency = Column(String(3), default="USD")
     category = Column(Enum(ExpenseCategory), nullable=False)
     receipt_url = Column(String(500), nullable=True)
-    status = Column(Enum(RequestStatus), default=RequestStatus.SUBMITTED, nullable=False, index=True)
+
+    status = Column(Enum(RequestStatus), default=RequestStatus.DRAFT, nullable=False, index=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     submitted_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     manager_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     finance_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
+    # Relaciones
     employee = relationship("UserModel", foreign_keys=[employee_id], back_populates="requests")
+    submitted_by = relationship("UserModel", foreign_keys=[submitted_by_id])
+    manager = relationship("UserModel", foreign_keys=[manager_id])
+    finance = relationship("UserModel", foreign_keys=[finance_id])
+
     approvals = relationship("ApprovalModel", back_populates="request", cascade="all, delete-orphan")
     notifications = relationship("NotificationModel", back_populates="request")
     audit_logs = relationship("AuditLogModel", back_populates="request")
 
     def to_domain(self):
-        """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Request, SubmittedState
-        from backend.app.domain.value_objects import Money, RequestTitle
-        from backend.app.domain.enums import RequestStatus
-
-        # Mapear estado a state object
         state_map = {
-            RequestStatus.SUBMITTED: "SubmittedState",
-            RequestStatus.MANAGER_REVIEW: "ManagerReviewState",
-            RequestStatus.APPROVED: "ApprovedState",
-            RequestStatus.REJECTED: "RejectedState",
+            RequestStatus.SUBMITTED: SubmittedState,
+            RequestStatus.MANAGER_REVIEW: ManagerReviewState,
+            RequestStatus.APPROVED: ApprovedState,
+            RequestStatus.REJECTED: RejectedState,
         }
+
+        state_class = state_map.get(self.status)
+        state = state_class() if state_class else SubmittedState()
 
         return Request(
             id=self.id,
             employee_id=self.employee_id,
-            title=RequestTitle(self.title),
-            description=self.description or "",
-            amount=Money(self.amount, self.currency),
+            title=self.title,
+            amount=Money(self.amount) if self.amount is not None else Money(0.0),
             category=self.category,
+            description=self.description or "",
             receipt_url=self.receipt_url,
+            state=state,
             status=self.status,
             created_at=self.created_at,
             updated_at=self.updated_at,
@@ -61,22 +76,22 @@ class RequestModel(Base):
         )
 
 
+# =========================
+# APPROVAL
+# =========================
 class ApprovalModel(Base):
-    """Modelo ORM para Approval."""
     __tablename__ = "approvals"
 
     id = Column(Integer, primary_key=True, index=True)
     request_id = Column(Integer, ForeignKey("requests.id"), nullable=False, index=True)
     approver_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    approval_type = Column(String(50), nullable=False)  # MANAGER_REVIEW, FINANCE_REVIEW
+    approval_type = Column(String(50), nullable=False)
     comment = Column(Text, nullable=True)
     approved_at = Column(DateTime, default=datetime.utcnow)
 
     request = relationship("RequestModel", back_populates="approvals")
 
     def to_domain(self):
-        """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Approval
         return Approval(
             id=self.id,
             request_id=self.request_id,
@@ -87,8 +102,10 @@ class ApprovalModel(Base):
         )
 
 
+# =========================
+# AUDIT LOG
+# =========================
 class AuditLogModel(Base):
-    """Modelo ORM para AuditLog."""
     __tablename__ = "audit_logs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -106,8 +123,6 @@ class AuditLogModel(Base):
     request = relationship("RequestModel", back_populates="audit_logs")
 
     def to_domain(self):
-        """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import AuditLog
         return AuditLog(
             id=self.id,
             actor_id=self.actor_id,
@@ -121,8 +136,10 @@ class AuditLogModel(Base):
         )
 
 
+# =========================
+# NOTIFICATION
+# =========================
 class NotificationModel(Base):
-    """Modelo ORM para Notification."""
     __tablename__ = "notifications"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -140,8 +157,6 @@ class NotificationModel(Base):
     request = relationship("RequestModel", back_populates="notifications")
 
     def to_domain(self):
-        """Convierte a entidad de dominio."""
-        from backend.app.domain.entities.request import Notification
         return Notification(
             id=self.id,
             user_id=self.user_id,

@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import MagicMock
 from datetime import datetime
-from backend.app.application.use_cases.approve_request import ApproveRequestUseCase
-from backend.app.application.dtos.request_dto import ApproveRequestDTO
-from backend.app.domain.enums import RoleType, ExpenseCategory, RequestStatus
-from backend.app.domain.value_objects import Money, RequestTitle
-from backend.app.domain.entities.request import Request
+from app.application.use_cases.approve_request import ApproveRequestUseCase
+from app.application.dtos.request_dto import ApproveRequestDTO
+from app.domain.enums import RoleType, ExpenseCategory, RequestStatus
+from app.domain.value_objects import Money, RequestTitle
+from app.domain.entities.request import Request
 
 
 def _fake_request():

@@ -1,5 +1,5 @@
 import pytest
-from backend.app.domain.factories.audit_log_builder import AuditLogBuilder
+from app.domain.factories.audit_log_builder import AuditLogBuilder
 
 
 def test_audit_log_built_correctly():

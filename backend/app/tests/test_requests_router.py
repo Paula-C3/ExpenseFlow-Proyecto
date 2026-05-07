@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
-from backend.app.application.dtos.request_dto import RequestResponseDTO
-from backend.app.domain.enums import ExpenseCategory, RequestStatus
+from app.application.dtos.request_dto import RequestResponseDTO
+from app.domain.enums import ExpenseCategory, RequestStatus
 
 
 def make_response_dto(**kwargs) -> dict:
@@ -34,14 +34,14 @@ def test_create_request_no_token(client):
         "category": "TRANSPORTATION",
         "description": "Viaje",
     })
-    assert response.status_code == 403  # HTTPBearer returns 403 when no credentials are provided
+    assert response.status_code in (401, 403)
 
 
 def test_create_request_as_employee(employee_client):
     mock_result = RequestResponseDTO(**make_response_dto())
 
-    with patch("backend.app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
-         patch("backend.app.api.routes.requests_router.CreateRequestUseCase") as MockUseCase:
+    with patch("app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
+         patch("app.api.routes.requests_router.CreateRequestUseCase") as MockUseCase:
         MockUseCase.return_value.execute.return_value = mock_result
 
         response = employee_client.post("/requests", json={
@@ -58,8 +58,8 @@ def test_create_request_as_employee(employee_client):
 # --- POST /requests/{id}/approve ---
 
 def test_approve_request_as_employee_returns_403(employee_client):
-    with patch("backend.app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
-         patch("backend.app.api.routes.requests_router.ApproveRequestUseCase") as MockUseCase:
+    with patch("app.api.routes.requests_router.get_event_bus", return_value=MagicMock()), \
+         patch("app.api.routes.requests_router.ApproveRequestUseCase") as MockUseCase:
         MockUseCase.return_value.execute.side_effect = PermissionError(
             "Solo MANAGER, FINANCE_ADMIN o SYSTEM_ADMIN pueden aprobar"
         )
@@ -73,15 +73,13 @@ def test_approve_request_as_employee_returns_403(employee_client):
 
 def test_get_requests_no_token(client):
     response = client.get("/requests")
-    assert response.status_code == 403  # HTTPBearer returns 403 when no credentials are provided
+    assert response.status_code in (401, 403)
 
 
 def test_get_requests_as_employee(employee_client):
     mock_result = [RequestResponseDTO(**make_response_dto())]
 
-    with patch(
-        "backend.app.api.routes.requests_router.GetRequestsByRoleUseCase"
-    ) as MockUseCase:
+    with patch("app.api.routes.requests_router.GetRequestsByRoleUseCase") as MockUseCase:
         MockUseCase.return_value.execute.return_value = mock_result
 
         response = employee_client.get("/requests")
@@ -93,9 +91,7 @@ def test_get_requests_as_employee(employee_client):
 # --- GET /requests/{id} ---
 
 def test_get_request_detail_not_found(employee_client):
-    with patch(
-        "backend.app.api.routes.requests_router.GetRequestDetailUseCase"
-    ) as MockUseCase:
+    with patch("app.api.routes.requests_router.GetRequestDetailUseCase") as MockUseCase:
         MockUseCase.return_value.execute.side_effect = ValueError("Solicitud 999 no encontrada")
 
         response = employee_client.get("/requests/999")

@@ -1,8 +1,8 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session          #type: ignore
 
-from backend.app.domain.entities.notification import Notification
-from backend.app.infrastructure.orm.request_model import NotificationModel
+from app.domain.entities.notification import Notification
+from app.infrastructure.orm.request_model import NotificationModel
 
 
 class NotificationRepository:

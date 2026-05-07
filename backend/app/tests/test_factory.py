@@ -1,8 +1,8 @@
 import pytest
 
-from backend.app.domain.factories.request_factory import RequestFactory
-from backend.app.domain.enums import RequestStatus, ExpenseCategory
-from backend.app.domain.value_objects import RequestTitle, Money
+from app.domain.factories.request_factory import RequestFactory
+from app.domain.enums import RequestStatus, ExpenseCategory
+from app.domain.value_objects import RequestTitle, Money
 
 
 def test_request_factory_create():

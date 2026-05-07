@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import MagicMock
 from datetime import datetime
-from backend.app.application.patterns.template_method import ApproveRequestProcessor
-from backend.app.domain.enums import RoleType, ExpenseCategory, RequestStatus
-from backend.app.domain.value_objects import Money, RequestTitle
-from backend.app.domain.entities.request import Request
+from app.application.patterns.template_method import ApproveRequestProcessor
+from app.domain.enums import RoleType, ExpenseCategory, RequestStatus
+from app.domain.value_objects import Money, RequestTitle
+from app.domain.entities.request import Request
 
 
 def make_request():
