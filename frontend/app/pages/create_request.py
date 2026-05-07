@@ -6,36 +6,37 @@ from services.api_client import create_request
 st.set_page_config(
     page_title="Nueva Solicitud",
     layout="centered",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
 )
-
-st.markdown("""
-
-""", unsafe_allow_html=True)
 
 require_login()
 
 st.title("Nueva Solicitud")
 
+st.info(
+    "El comprobante es obligatorio según la política. "
+    "Si no lo agregas, la solicitud quedará en estado CHANGES_REQUESTED."
+)
+
 with st.form("create_request_form"):
 
-    title = st.text_input("Título")
+    title = st.text_input("Título *")
 
     description = st.text_area("Descripción")
 
     amount = st.number_input(
-        "Monto",
+        "Monto *",
         min_value=0.0,
-        step=1.0
+        step=1.0,
     )
 
     currency = st.selectbox(
         "Moneda",
-        ["USD", "EUR", "COP"]
+        ["USD", "EUR", "COP"],
     )
 
     category_label = st.selectbox(
-        "Categoría",
+        "Categoría *",
         [
             "Transporte",
             "Viaje",
@@ -58,13 +59,13 @@ with st.form("create_request_form"):
     }
 
     receipt_url = st.text_input(
-        "URL del comprobante",
-        placeholder="Opcional"
+        "URL o referencia del comprobante *",
+        placeholder="Ejemplo: https://factura.com/comprobante.pdf o Factura #123",
     )
 
     submitted = st.form_submit_button(
         "Crear solicitud",
-        use_container_width=True
+        use_container_width=True,
     )
 
 if submitted:
@@ -89,7 +90,16 @@ if submitted:
     res = create_request(payload)
 
     if res.status_code in (200, 201):
-        st.success("Solicitud creada correctamente.")
+        created_request = res.json()
+        status = created_request.get("status")
+
+        if status == "CHANGES_REQUESTED":
+            st.warning(
+                "Solicitud creada, pero quedó en CHANGES_REQUESTED porque falta el comprobante."
+            )
+        else:
+            st.success("Solicitud creada correctamente.")
+
     elif res.status_code == 401:
         st.error("Tu sesión expiró. Inicia sesión otra vez.")
     else:

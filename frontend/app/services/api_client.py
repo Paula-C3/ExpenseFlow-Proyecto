@@ -46,6 +46,25 @@ def get_request_detail(request_id: int):
 def create_request(data: dict):
     return _request("POST", "/requests", json=data, headers=_headers())
 
+
+def approve_request(request_id: int, comment: str = ""):
+    return _request(
+        "POST",
+        f"/requests/{request_id}/approve",
+        json={"comment": comment},
+        headers=_headers(),
+    )
+
+
+def reject_request(request_id: int, reason: str):
+    return _request(
+        "POST",
+        f"/requests/{request_id}/reject",
+        json={"reason": reason},
+        headers=_headers(),
+    )
+
+
 def get_notifications():
     return _request(
         "GET",

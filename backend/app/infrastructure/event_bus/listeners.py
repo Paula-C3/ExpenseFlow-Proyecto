@@ -8,7 +8,7 @@ from backend.app.domain.events import (
 )
 from backend.app.domain.factories.audit_log_builder import AuditLogBuilder
 from backend.app.domain.entities.notification import Notification
-from backend.app.domain.enums import RoleType
+from backend.app.domain.enums import RoleType, RequestStatus
 from backend.app.infrastructure.orm.user_model import UserModel
 
 
@@ -73,7 +73,15 @@ class NotificationListener(IEventListener):
             .all()
         )
 
-    def _notify(self, user_id: int, title: str, message: str, notification_type: str, request_id: int, created_at):
+    def _notify(
+        self,
+        user_id: int,
+        title: str,
+        message: str,
+        notification_type: str,
+        request_id: int,
+        created_at,
+    ):
         notification = Notification(
             user_id=user_id,
             title=title,
@@ -84,33 +92,57 @@ class NotificationListener(IEventListener):
         )
         self.notification_repository.save(notification)
 
+    def _notify_role(
+        self,
+        role: RoleType,
+        title: str,
+        message: str,
+        notification_type: str,
+        request_id: int,
+        created_at,
+    ):
+        users = self._users_by_role(role)
+
+        for user in users:
+            self._notify(
+                user_id=user.id,
+                title=title,
+                message=message,
+                notification_type=notification_type,
+                request_id=request_id,
+                created_at=created_at,
+            )
+
     def handle(self, event: DomainEvent) -> None:
         if isinstance(event, RequestCreatedEvent):
             if event.amount <= 50:
-                finance_users = self._users_by_role(RoleType.FINANCE_ANALYST)
+                self._notify_role(
+                    role=RoleType.FINANCE_ANALYST,
+                    title="Solicitud lista para revisión financiera",
+                    message=f"La solicitud {event.request_id} es menor o igual a 50 USD y requiere revisión de Finanzas.",
+                    notification_type="FINANCE_REVIEW_REQUIRED",
+                    request_id=event.request_id,
+                    created_at=event.timestamp,
+                )
 
-                for user in finance_users:
-                    self._notify(
-                        user_id=user.id,
-                        title="Solicitud lista para revisión financiera",
-                        message=f"La solicitud {event.request_id} requiere revisión de Finanzas.",
-                        notification_type="FINANCE_REVIEW_REQUIRED",
-                        request_id=event.request_id,
-                        created_at=event.timestamp,
-                    )
+                self._notify_role(
+                    role=RoleType.FINANCE_ADMIN,
+                    title="Solicitud lista para revisión financiera",
+                    message=f"La solicitud {event.request_id} es menor o igual a 50 USD y puede ser revisada por Finanzas.",
+                    notification_type="FINANCE_REVIEW_REQUIRED",
+                    request_id=event.request_id,
+                    created_at=event.timestamp,
+                )
 
             else:
-                managers = self._users_by_role(RoleType.MANAGER)
-
-                for user in managers:
-                    self._notify(
-                        user_id=user.id,
-                        title="Solicitud requiere aprobación",
-                        message=f"La solicitud {event.request_id} requiere aprobación de Manager.",
-                        notification_type="MANAGER_APPROVAL_REQUIRED",
-                        request_id=event.request_id,
-                        created_at=event.timestamp,
-                    )
+                self._notify_role(
+                    role=RoleType.MANAGER,
+                    title="Solicitud requiere aprobación de Manager",
+                    message=f"La solicitud {event.request_id} requiere aprobación de Manager.",
+                    notification_type="MANAGER_APPROVAL_REQUIRED",
+                    request_id=event.request_id,
+                    created_at=event.timestamp,
+                )
 
         elif isinstance(event, RequestSubmittedEvent):
             self._notify(
@@ -126,7 +158,7 @@ class NotificationListener(IEventListener):
             self._notify(
                 user_id=event.employee_id,
                 title="Solicitud aprobada",
-                message=f"Tu solicitud {event.request_id} ha sido aprobada.",
+                message=f"Tu solicitud {event.request_id} ha avanzado en el flujo de aprobación.",
                 notification_type="REQUEST_APPROVED",
                 request_id=event.request_id,
                 created_at=event.timestamp,
@@ -141,3 +173,33 @@ class NotificationListener(IEventListener):
                 request_id=event.request_id,
                 created_at=event.timestamp,
             )
+
+        elif isinstance(event, RequestStatusChangedEvent):
+            if event.new_status == RequestStatus.FINANCE_REVIEW:
+                self._notify_role(
+                    role=RoleType.FINANCE_ANALYST,
+                    title="Solicitud lista para revisión financiera",
+                    message=f"La solicitud {event.request_id} fue aprobada por Manager y ahora requiere revisión de Finanzas.",
+                    notification_type="FINANCE_REVIEW_REQUIRED",
+                    request_id=event.request_id,
+                    created_at=event.timestamp,
+                )
+
+                self._notify_role(
+                    role=RoleType.FINANCE_ADMIN,
+                    title="Solicitud lista para revisión financiera",
+                    message=f"La solicitud {event.request_id} está disponible para revisión financiera.",
+                    notification_type="FINANCE_REVIEW_REQUIRED",
+                    request_id=event.request_id,
+                    created_at=event.timestamp,
+                )
+
+            elif event.new_status == RequestStatus.READY_FOR_PAYMENT:
+                self._notify_role(
+                    role=RoleType.FINANCE_ADMIN,
+                    title="Solicitud lista para pago",
+                    message=f"La solicitud {event.request_id} está lista para revisión final o pago.",
+                    notification_type="REQUEST_READY_FOR_PAYMENT",
+                    request_id=event.request_id,
+                    created_at=event.timestamp,
+                )
