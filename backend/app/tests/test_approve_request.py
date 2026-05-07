@@ -45,7 +45,7 @@ def test_approve_succeeds_for_manager():
     repo.update.return_value = fake
 
     use_case = ApproveRequestUseCase(repo=repo, event_bus=event_bus)
-    result = use_case.execute(request_id=1, dto=ApproveRequestDTO(comment="ok"), approver_id=5, role=RoleType.MANAGER.value)
+    use_case.execute(request_id=1, dto=ApproveRequestDTO(comment="ok"), approver_id=5, role=RoleType.MANAGER.value)
 
     repo.update.assert_called_once()
 
