@@ -1,28 +1,47 @@
+import os
+
 import requests
 import streamlit as st
 
-BASE_URL = "http://backend:8000"  
+BASE_URL = os.getenv("API_BASE_URL", "http://backend:8000")
+TIMEOUT = 10
 
-def _headers():
-    return {
-        "Authorization": f"Bearer {st.session_state['token']}"
-    }
 
-def login(email, password):
-    res = requests.post(f"{BASE_URL}/auth/login", json={
-        "email": email,
-        "password": password
-    })
-    return res
+def _headers() -> dict[str, str]:
+    token = st.session_state.get("token")
+    if not token:
+        return {}
+    return {"Authorization": f"Bearer {token}"}
+
+
+def _request(method: str, path: str, **kwargs):
+    return requests.request(
+        method=method,
+        url=f"{BASE_URL}{path}",
+        timeout=TIMEOUT,
+        **kwargs,
+    )
+
+
+def login_user(email: str, password: str):
+    return _request(
+        "POST",
+        "/auth/login",
+        json={"email": email, "password": password},
+    )
+
+
+def login(email: str, password: str):
+    return login_user(email, password)
+
 
 def get_requests():
-    res = requests.get(f"{BASE_URL}/requests", headers=_headers())
-    return res
+    return _request("GET", "/requests", headers=_headers())
 
-def get_request_detail(request_id):
-    res = requests.get(f"{BASE_URL}/requests/{request_id}", headers=_headers())
-    return res
 
-def create_request(data):
-    res = requests.post(f"{BASE_URL}/requests", json=data, headers=_headers())
-    return res
+def get_request_detail(request_id: int):
+    return _request("GET", f"/requests/{request_id}", headers=_headers())
+
+
+def create_request(data: dict):
+    return _request("POST", "/requests", json=data, headers=_headers())

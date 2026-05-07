@@ -2,9 +2,9 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, E
 from sqlalchemy.orm import relationship     #type: ignore
 from datetime import datetime
 
-from app.infrastructure.database import Base
-from app.domain.enums import RoleType
-from app.infrastructure.orm.request_model import RequestModel, AuditLogModel
+from backend.app.infrastructure.database import Base
+from backend.app.domain.enums import RoleType
+from backend.app.infrastructure.orm.request_model import RequestModel, AuditLogModel
 
 
 class RoleModel(Base):
@@ -20,7 +20,7 @@ class RoleModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from app.domain.entities.user import Role
+        from backend.app.domain.entities.user import Role
         return Role(
             id=self.id,                         #type: ignore
             name=self.name,                     #type: ignore
@@ -56,8 +56,8 @@ class UserModel(Base):
 
     def to_domain(self):
         """Convierte a entidad de dominio."""
-        from app.domain.entities.user import User
-        from app.domain.value_objects import Email
+        from backend.app.domain.entities.user import User
+        from backend.app.domain.value_objects import Email
         
         return User(
             id=self.id,                                     #type: ignore

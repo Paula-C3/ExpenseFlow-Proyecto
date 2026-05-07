@@ -1,13 +1,13 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.infrastructure.database import Base
-from app.infrastructure.orm.request_repository import SQLRequestRepository
-from app.infrastructure.orm.user_repository import SQLUserRepository
-from app.domain.entities.request import Request
-from app.domain.entities.user import User
-from app.domain.value_objects import Email, Money
-from app.domain.enums import ExpenseCategory, RequestStatus
+from backend.app.infrastructure.database import Base
+from backend.app.infrastructure.orm.request_repository import SQLRequestRepository
+from backend.app.infrastructure.orm.user_repository import SQLUserRepository
+from backend.app.domain.entities.request import Request
+from backend.app.domain.entities.user import User
+from backend.app.domain.value_objects import Email, Money
+from backend.app.domain.enums import ExpenseCategory, RequestStatus
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def test_save_and_find_request(db_session):
         manager_id=None,
         finance_id=None,
     )
-    saved = repo.save(request)
+    saved =repo.save(request)
     found = repo.find_by_id(saved.id)
     assert found is not None
     assert found.title == "Compra laptop"
@@ -60,10 +60,10 @@ def test_update_request(db_session):
         manager_id=None,
         finance_id=None,
     )
-    saved = repo.save(request)
-    saved.title = "Compra teclado"
-    updated = repo.update(saved)
-    assert updated.title == "Compra teclado"
+    repo.save(request)
+    request.title = "Compra teclado"
+    repo.update(request)
+    assert request.title == "Compra teclado"
 
 
 def test_delete_request(db_session):
@@ -81,9 +81,9 @@ def test_delete_request(db_session):
         manager_id=None,
         finance_id=None,
     )
-    saved = repo.save(request)
-    repo.delete(saved.id)
-    assert repo.find_by_id(saved.id) is None
+    repo.save(request)
+    repo.delete(request.id)
+    assert repo.find_by_id(request.id) is None
 
 
 def test_save_and_find_user(db_session):
@@ -112,10 +112,10 @@ def test_update_user(db_session):
         is_active=True,
         role_id=1,
     )
-    saved = repo.save(user)
-    saved.full_name = "Paula Actualizada"
-    updated = repo.update(saved)
-    assert updated.full_name == "Paula Actualizada"
+    repo.save(user)
+    user.full_name = "Paula Actualizada"
+    repo.update(user)
+    assert user.full_name == "Paula Actualizada"
 
 
 def test_delete_user(db_session):
@@ -128,6 +128,6 @@ def test_delete_user(db_session):
         is_active=True,
         role_id=1,
     )
-    saved = repo.save(user)
-    repo.delete(saved.id)
-    assert repo.find_by_id(saved.id) is None
+    repo.save(user)
+    repo.delete(user.id)
+    assert repo.find_by_id(user.id) is None

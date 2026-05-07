@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
-from app.domain.enums import RequestStatus, ExpenseCategory
+from backend.app.domain.enums import RequestStatus, ExpenseCategory
 
 
 class CreateRequestDTO(BaseModel):

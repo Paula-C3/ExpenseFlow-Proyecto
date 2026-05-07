@@ -1,8 +1,8 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session          #type: ignore
 
-from app.domain.entities.notification import Notification
-from app.infrastructure.orm.request_model import NotificationModel
+from backend.app.domain.entities.notification import Notification
+from backend.app.infrastructure.orm.request_model import NotificationModel
 
 
 class NotificationRepository:
@@ -44,7 +44,7 @@ class NotificationRepository:
         """Busca notificaciones no leídas de un usuario."""
         db_notifs = self.db.query(NotificationModel).filter(
             NotificationModel.user_id == user_id,
-            NotificationModel.is_read.is_(False)
+            not NotificationModel.is_read
         ).all()
         return [n.to_domain() for n in db_notifs]
 

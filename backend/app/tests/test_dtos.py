@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
-from app.application.dtos.request_dto import CreateRequestDTO, RejectRequestDTO
-from app.domain.enums import ExpenseCategory
+from backend.app.application.dtos.request_dto import CreateRequestDTO, RejectRequestDTO
+from backend.app.domain.enums import ExpenseCategory
 
 
 def test_create_request_dto_valid():

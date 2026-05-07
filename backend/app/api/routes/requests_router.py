@@ -3,21 +3,22 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException       #type: ignore
 from sqlalchemy.orm import Session                          #type: ignore
 
-from app.api.dependencies import get_current_user
-from app.application.dtos.request_dto import (
+from backend.app.api.dependencies import get_current_user
+from backend.app.application.dtos.request_dto import (
     ApproveRequestDTO,
     CreateRequestDTO,
     RejectRequestDTO,
     RequestResponseDTO,
 )
-from app.application.use_cases.approve_request import ApproveRequestUseCase
-from app.application.use_cases.create_request import CreateRequestUseCase
-from app.application.use_cases.get_request_detail import GetRequestDetailUseCase
-from app.application.use_cases.get_requests_by_role import GetRequestsByRoleUseCase
-from app.application.use_cases.reject_request import RejectRequestUseCase
-from app.domain.factories.singleton import EventBusRegistry
-from app.infrastructure.database import get_db
-from app.infrastructure.orm.request_repository import SQLRequestRepository
+from backend.app.application.use_cases.approve_request import ApproveRequestUseCase
+from backend.app.application.use_cases.create_request import CreateRequestUseCase
+from backend.app.application.use_cases.get_request_detail import GetRequestDetailUseCase
+from backend.app.application.use_cases.get_requests_by_role import GetRequestsByRoleUseCase
+from backend.app.application.use_cases.reject_request import RejectRequestUseCase
+from backend.app.domain.enums import RoleType
+from backend.app.domain.factories.singleton import EventBusRegistry
+from backend.app.infrastructure.database import get_db
+from backend.app.infrastructure.orm.request_repository import SQLRequestRepository
 
 router = APIRouter(prefix="/requests", tags=["requests"])
 
@@ -59,10 +60,25 @@ def get_request_detail(
 ):
     repo = SQLRequestRepository(db)
     use_case = GetRequestDetailUseCase(repo=repo)
+
     try:
-        return use_case.execute(request_id=request_id)
+        request = use_case.execute(request_id=request_id)
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Solicitud {request_id} no encontrada")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Solicitud {request_id} no encontrada"
+        )
+
+    role = current_user["role"]
+    user_id = int(current_user["sub"])
+
+    if role == RoleType.EMPLOYEE.value and request.employee_id != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para ver esta solicitud"
+        )
+
+    return request
 
 
 @router.post("/{request_id}/approve", response_model=RequestResponseDTO)
@@ -77,8 +93,14 @@ def approve_request(
     repo = SQLRequestRepository(db)
     event_bus = get_event_bus()
     use_case = ApproveRequestUseCase(repo=repo, event_bus=event_bus)
+
     try:
-        return use_case.execute(request_id=request_id, dto=dto, approver_id=approver_id, role=role)
+        return use_case.execute(
+            request_id=request_id,
+            dto=dto,
+            approver_id=approver_id,
+            role=role
+        )
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except ValueError as e:
@@ -97,8 +119,14 @@ def reject_request(
     repo = SQLRequestRepository(db)
     event_bus = get_event_bus()
     use_case = RejectRequestUseCase(repo=repo, event_bus=event_bus)
+
     try:
-        return use_case.execute(request_id=request_id, dto=dto, rejector_id=rejector_id, role=role)
+        return use_case.execute(
+            request_id=request_id,
+            dto=dto,
+            rejector_id=rejector_id,
+            role=role
+        )
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except ValueError as e:

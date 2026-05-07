@@ -9,10 +9,10 @@ import sys
 sys.path.insert(0, "/app")
 
 from sqlalchemy.orm import Session
-from app.infrastructure.database import SessionLocal, init_db
-from app.infrastructure.orm.user_model import UserModel, RoleModel
-from app.infrastructure.security import hash_password
-from app.domain.enums import RoleType
+from backend.app.infrastructure.database import SessionLocal, init_db
+from backend.app.infrastructure.orm.user_model import UserModel, RoleModel
+from backend.app.infrastructure.security import hash_password
+from backend.app.domain.enums import RoleType
 
 
 ROLES = [

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from app.domain.entities.request import Request
-from app.domain.enums import RequestStatus, RoleType
+from backend.app.domain.entities.request import Request
+from backend.app.domain.enums import RequestStatus, RoleType
 
 
 class IRequestRepository(ABC):
