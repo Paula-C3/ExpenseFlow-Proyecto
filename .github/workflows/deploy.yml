@@ -40,7 +40,8 @@ jobs:
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: .
+          dockerfile: backend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-backend:${{ steps.tags.outputs.tag }}
@@ -49,7 +50,8 @@ jobs:
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: .
+          dockerfile: frontend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/expenseflow-frontend:${{ steps.tags.outputs.tag }}
